@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenRun Id="impl_1" LaunchPart="xc7a100tcsg324-1" LaunchTime="1794300757">
+  <File Type="REPORTS-TCL" Name="lab08_top_reports.tcl"/>
+  <File Type="ROUTE-PWR-SUM" Name="lab08_top_power_summary_routed.pb"/>
+  <File Type="BITSTR-MMI" Name="lab08_top.mmi"/>
+  <File Type="OPT-DRC" Name="lab08_top_drc_opted.rpt"/>
+  <File Type="BG-DRC" Name="lab08_top.drc"/>
+  <File Type="ROUTE-STATUS-PB" Name="lab08_top_route_status.pb"/>
+  <File Type="BG-BGN" Name="lab08_top.bgn"/>
+  <File Type="PLACE-UTIL" Name="lab08_top_utilization_placed.rpt"/>
+  <File Type="PLACE-UTIL-PB" Name="lab08_top_utilization_placed.pb"/>
+  <File Type="PLACE-IO" Name="lab08_top_io_placed.rpt"/>
+  <File Type="BG-BIN" Name="lab08_top.bin"/>
+  <File Type="PLACE-CTRL" Name="lab08_top_control_sets_placed.rpt"/>
+  <File Type="ROUTE-PWR-RPX" Name="lab08_top_power_routed.rpx"/>
+  <File Type="ROUTE-DCP" Name="lab08_top_routed.dcp"/>
+  <File Type="BITSTR-MSK" Name="lab08_top.msk"/>
+  <File Type="BITSTR-RBT" Name="lab08_top.rbt"/>
+  <File Type="ROUTE-TIMINGSUMMARY" Name="lab08_top_timing_summary_routed.rpt"/>
+  <File Type="ROUTE-TIMING-RPX" Name="lab08_top_timing_summary_routed.rpx"/>
+  <File Type="ROUTE-STATUS" Name="lab08_top_route_status.rpt"/>
+  <File Type="PA-TCL" Name="lab08_top.tcl"/>
+  <File Type="ROUTE-PWR" Name="lab08_top_power_routed.rpt"/>
+  <File Type="ROUTE-DRC" Name="lab08_top_drc_routed.rpt"/>
+  <File Type="ROUTE-DRC-RPX" Name="lab08_top_drc_routed.rpx"/>
+  <File Type="ROUTE-DRC-PB" Name="lab08_top_drc_routed.pb"/>
+  <File Type="BITSTR-SYSDEF" Name="lab08_top.sysdef"/>
+  <File Type="ROUTE-METHODOLOGY-DRC" Name="lab08_top_methodology_drc_routed.rpt"/>
+  <File Type="ROUTE-METHODOLOGY-DRC-RPX" Name="lab08_top_methodology_drc_routed.rpx"/>
+  <File Type="BITSTR-LTX" Name="debug_nets.ltx"/>
+  <File Type="BITSTR-LTX" Name="lab08_top.ltx"/>
+  <File Type="ROUTE-METHODOLOGY-DRC-PB" Name="lab08_top_methodology_drc_routed.pb"/>
+  <File Type="ROUTE-SIMILARITY" Name="lab08_top_incremental_reuse_routed.rpt"/>
+  <File Type="RDI-RDI" Name="lab08_top.vdi"/>
+  <File Type="ROUTE-CLK" Name="lab08_top_clock_utilization_routed.rpt"/>
+  <File Type="ROUTE-BUS-SKEW" Name="lab08_top_bus_skew_routed.rpt"/>
+  <File Type="ROUTE-BUS-SKEW-RPX" Name="lab08_top_bus_skew_routed.rpx"/>
+  <File Type="ROUTE-BUS-SKEW-PB" Name="lab08_top_bus_skew_routed.pb"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING" Name="lab08_top_timing_summary_postroute_physopted.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-RPX" Name="lab08_top_timing_summary_postroute_physopted.rpx"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-PB" Name="lab08_top_timing_summary_postroute_physopted.pb"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW" Name="lab08_top_bus_skew_postroute_physopted.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-RPX" Name="lab08_top_bus_skew_postroute_physopted.rpx"/>
+  <File Type="BG-BIT" Name="lab08_top.bit"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-PB" Name="lab08_top_bus_skew_postroute_physopted.pb"/>
+  <File Type="BITSTR-NKY" Name="lab08_top.nky"/>
+  <File Type="BITSTR-BMM" Name="lab08_top_bd.bmm"/>
+  <File Type="WBT-USG" Name="usage_statistics_webtalk.html"/>
+  <File Type="OPT-HWDEF" Name="lab08_top.hwdef"/>
+  <File Type="PLACE-PRE-SIMILARITY" Name="lab08_top_incremental_reuse_pre_placed.rpt"/>
+  <File Type="ROUTE-ERROR-DCP" Name="lab08_top_routed_error.dcp"/>
+  <File Type="ROUTE-BLACKBOX-DCP" Name="lab08_top_routed_bb.dcp"/>
+  <File Type="ROUTE-TIMING-PB" Name="lab08_top_timing_summary_routed.pb"/>
+  <File Type="OPT-DCP" Name="lab08_top_opt.dcp"/>
+  <File Type="PLACE-DCP" Name="lab08_top_placed.dcp"/>
+  <File Type="PWROPT-DCP" Name="lab08_top_pwropt.dcp"/>
+  <File Type="POSTPLACE-PWROPT-DCP" Name="lab08_top_postplace_pwropt.dcp"/>
+  <File Type="PHYSOPT-DCP" Name="lab08_top_physopt.dcp"/>
+  <File Type="POSTROUTE-PHYSOPT-DCP" Name="lab08_top_postroute_physopt.dcp"/>
+  <File Type="POSTROUTE-PHYSOPT-BLACKBOX-DCP" Name="lab08_top_postroute_physopt_bb.dcp"/>
+  <File Type="PDI-FILE" Name="lab08_top.pdi"/>
+  <File Type="BOOT-PDI-FILE" Name="lab08_top_boot.pdi"/>
+  <File Type="PL-PDI-FILE" Name="lab08_top_pld.pdi"/>
+  <File Type="RCFI_FILE" Name="lab08_top.rcfi"/>
+  <File Type="CFI_FILE" Name="lab08_top.cfi"/>
+  <File Type="RNPI_FILE" Name="lab08_top.rnpi"/>
+  <File Type="NPI_FILE" Name="lab08_top.npi"/>
+  <File Type="RBD_FILE" Name="lab08_top.rbd"/>
+  <File Type="ROUTE-RQS" Name="lab08_top_routed.rqs"/>
+  <File Type="POSTROUTE-PHYSOPT-RQS" Name="lab08_top_postroute_physopted.rqs"/>
+  <File Type="ROUTE-RQS-RPT" Name="route_report_qor_suggestions_0.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-RQS-RPT" Name="postroute_physopt_report_qor_suggestions_0.rpt"/>
+  <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
+    <Filter Type="Srcs"/>
+    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/clk_gen.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/lab08.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/player.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/roms.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/vga_render.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/lab08_top.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/mem/map.mem">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/mem/map_pal.mem">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/mem/sprite.mem">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/mem/spr_pal.mem">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="DesignMode" Val="RTL"/>
+      <Option Name="TopModule" Val="lab08_top"/>
+    </Config>
+  </FileSet>
+  <FileSet Name="constrs_in" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1" RelGenDir="$PGENDIR/constrs_1">
+    <Filter Type="Constrs"/>
+    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/constrs/lab08.xdc">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="ConstrsType" Val="XDC"/>
+    </Config>
+  </FileSet>
+  <FileSet Name="utils" Type="Utils" RelSrcDir="$PSRCDIR/utils_1" RelGenDir="$PGENDIR/utils_1">
+    <Filter Type="Utils"/>
+    <Config>
+      <Option Name="TopAutoSet" Val="TRUE"/>
+    </Config>
+  </FileSet>
+  <Strategy Version="1" Minor="2">
+    <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2024"/>
+    <Step Id="init_design"/>
+    <Step Id="opt_design"/>
+    <Step Id="power_opt_design"/>
+    <Step Id="place_design"/>
+    <Step Id="post_place_power_opt_design"/>
+    <Step Id="phys_opt_design"/>
+    <Step Id="route_design"/>
+    <Step Id="post_route_phys_opt_design"/>
+    <Step Id="write_bitstream"/>
+    <Step Id="write_device_image"/>
+  </Strategy>
+</GenRun>

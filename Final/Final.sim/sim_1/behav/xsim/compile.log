@@ -1,0 +1,6 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Downloads/LAB08_VGA_Walk/rtl/lab08.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module vga_sync
+INFO: [VRFC 10-311] analyzing module dffe_aclr
+INFO: [VRFC 10-311] analyzing module walk_fsm
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Downloads/LAB08_VGA_Walk/sim/tb_walk_fsm.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module tb_walk_fsm
