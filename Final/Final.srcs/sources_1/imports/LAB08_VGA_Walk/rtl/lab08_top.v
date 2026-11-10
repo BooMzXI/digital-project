@@ -16,7 +16,10 @@ module lab08_top (
     input  wire       BTNU, BTND, BTNL, BTNR,
     output wire [3:0] VGA_R, VGA_G, VGA_B,
     output wire       VGA_HS, VGA_VS,
-    output wire [1:0] LED
+    output wire [1:0] LED,
+    // ---  7-Segment ---
+    output wire       CA, CB, CC, CD, CE, CF, CG, DP,
+    output wire [7:0] AN
 );
     // ---------------- clock and reset ----------------
     wire clk, locked;
@@ -56,4 +59,55 @@ module lab08_top (
                          .px(px), .py(py), .cam_x(cam_x), .cam_y(cam_y),
                          .sprite_frame(sprite_frame), .mirror(mirror),
                          .VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B), .VGA_HS(VGA_HS), .VGA_VS(VGA_VS));
+                         
+   wire tick_1sec, tick_fast;
+   
+   
+// ---------------- timer ----------------
+tick_gen #(.DIV(25_000_000)) u_tick_1sec (
+    .clk(clk), .reset_n(~rst), .tick(tick_1sec)
+);
+
+tick_gen #(.DIV(25_000)) u_tick_fast ( // 25MHz / 25,000 = 1,000 Hz
+    .clk(clk), .reset_n(~rst), .tick(tick_fast)
+);
+
+// 2. Cascade 4-digit Counter
+wire [3:0] d0, d1, d2, d3;
+
+// Counting conditions for each digit
+wire en_d1 = tick_1sec & (d0 == 4'd9);
+wire en_d2 = en_d1     & (d1 == 4'd9);
+wire en_d3 = en_d2     & (d2 == 4'd9);
+
+mod10_jk cnt0 (.clk(clk), .clear_n(~rst), .en(tick_1sec), .count(d0)); // Ones digit
+mod10_jk cnt1 (.clk(clk), .clear_n(~rst), .en(en_d1),     .count(d1)); // Tens digit
+mod10_jk cnt2 (.clk(clk), .clear_n(~rst), .en(en_d2),     .count(d2)); // Hundreds digit
+mod10_jk cnt3 (.clk(clk), .clear_n(~rst), .en(en_d3),     .count(d3)); // Thousands digit
+
+// 3. Screen switching circuit (Multiplexer)
+reg [1:0] scan_sel = 0;
+always @(posedge clk) begin
+    if (tick_fast) scan_sel <= scan_sel + 1'b1;
+end
+
+reg [3:0] current_digit;
+reg [7:0] an_temp;
+
+always @(*) begin
+    case (scan_sel)
+        2'd0: begin current_digit = d0; an_temp = 8'b1111_1110; end // open AN[0]
+        2'd1: begin current_digit = d1; an_temp = 8'b1111_1101; end // open AN[1]
+        2'd2: begin current_digit = d2; an_temp = 8'b1111_1011; end // open AN[2]
+        2'd3: begin current_digit = d3; an_temp = 8'b1111_0111; end // open AN[3]
+    endcase
+end
+
+// 4. Decode the selected digit for 7-Segment display
+wire [6:0] seg_n;
+seg7_dec u_seg7 (.digit(current_digit), .seg_n(seg_n));
+
+assign {CG, CF, CE, CD, CC, CB, CA} = seg_n;
+assign DP = 1'b1;           // Turn off decimal point
+assign AN = an_temp;
 endmodule

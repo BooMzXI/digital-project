@@ -4,7 +4,7 @@
 <!-- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.                   -->
 <!-- Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.   -->
 
-<Project Product="Vivado" Version="7" Minor="68" Path="C:/Users/phure/Documents/1CPE/cpe 222/Final/Final.xpr">
+<Project Product="Vivado" Version="7" Minor="68" Path="C:/Users/phure/Documents/GitHub/digital-project/Final/Final.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="0ab78ed011a944b3b0f1f200fd8af6e1"/>
@@ -104,6 +104,15 @@
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/lab08.v"/>
           <Attr Name="ImportTime" Val="1793977042"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/Lab06/mod10_jk.v">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/Lab06/mod10_jk.v"/>
+          <Attr Name="ImportTime" Val="1790915060"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
