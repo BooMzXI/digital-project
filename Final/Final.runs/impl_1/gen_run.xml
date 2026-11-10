@@ -72,68 +72,88 @@
   <File Type="POSTROUTE-PHYSOPT-RQS-RPT" Name="postroute_physopt_report_qor_suggestions_0.rpt"/>
   <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
     <Filter Type="Srcs"/>
-    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/clk_gen.v">
+    <File Path="$PSRCDIR/sources_1/imports/LAB08_VGA_Walk/rtl/clk_gen.v">
       <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/clk_gen.v"/>
+        <Attr Name="ImportTime" Val="1793933227"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/lab08.v">
+    <File Path="$PSRCDIR/sources_1/imports/LAB08_VGA_Walk/rtl/lab08.v">
       <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/lab08.v"/>
+        <Attr Name="ImportTime" Val="1793977042"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/player.v">
+    <File Path="$PSRCDIR/sources_1/imports/LAB08_VGA_Walk/rtl/player.v">
       <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/player.v"/>
+        <Attr Name="ImportTime" Val="1793933227"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/roms.v">
+    <File Path="$PSRCDIR/sources_1/imports/LAB08_VGA_Walk/rtl/roms.v">
       <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/roms.v"/>
+        <Attr Name="ImportTime" Val="1793933227"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/vga_render.v">
+    <File Path="$PSRCDIR/sources_1/imports/LAB08_VGA_Walk/rtl/vga_render.v">
       <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/vga_render.v"/>
+        <Attr Name="ImportTime" Val="1793933227"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/lab08_top.v">
+    <File Path="$PSRCDIR/sources_1/imports/LAB08_VGA_Walk/rtl/lab08_top.v">
       <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/lab08_top.v"/>
+        <Attr Name="ImportTime" Val="1793933227"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/mem/map.mem">
+    <File Path="$PSRCDIR/sources_1/imports/LAB08_VGA_Walk/mem/map.mem">
       <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/mem/map.mem"/>
+        <Attr Name="ImportTime" Val="1793933227"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/mem/map_pal.mem">
+    <File Path="$PSRCDIR/sources_1/imports/LAB08_VGA_Walk/mem/map_pal.mem">
       <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/mem/map_pal.mem"/>
+        <Attr Name="ImportTime" Val="1793933227"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/mem/sprite.mem">
+    <File Path="$PSRCDIR/sources_1/imports/LAB08_VGA_Walk/mem/sprite.mem">
       <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/mem/sprite.mem"/>
+        <Attr Name="ImportTime" Val="1793933227"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/mem/spr_pal.mem">
+    <File Path="$PSRCDIR/sources_1/imports/LAB08_VGA_Walk/mem/spr_pal.mem">
       <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/mem/spr_pal.mem"/>
+        <Attr Name="ImportTime" Val="1793933227"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
@@ -145,8 +165,10 @@
   </FileSet>
   <FileSet Name="constrs_in" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1" RelGenDir="$PGENDIR/constrs_1">
     <Filter Type="Constrs"/>
-    <File Path="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/constrs/lab08.xdc">
+    <File Path="$PSRCDIR/constrs_1/imports/constrs/lab08.xdc">
       <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/constrs/lab08.xdc"/>
+        <Attr Name="ImportTime" Val="1793933227"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
       </FileInfo>
