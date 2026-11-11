@@ -10,6 +10,7 @@ module player (
     input  wire       rst,
     input  wire       tick,              // one pulse per frame
     input  wire [3:0] btn,               // {up, down, left, right}
+input  wire       btn_attack,
     output reg  [9:0] px = 10'd210,
     output reg  [9:0] py = 10'd655,
     output reg  [8:0] cam_x = 0,
@@ -20,9 +21,11 @@ module player (
     output wire       adv,                // walk_fsm may change state now
     // ---  Output for item and form ---
     output reg  [2:0] item_active, // 3 item
-    output reg  [2:0] current_form, // 3 form 0 normal
+    output reg  [2:0] current_form, // 3 form 0 normal 3 bit
     output wire [29:0] flat_item_x, // position X 3 item (10 bit each)
-    output wire [29:0] flat_item_y 
+    output wire [29:0] flat_item_y ,
+//attack check
+output reg        is_attacking = 0 
 );
 //walk
     localparam STEP = 2;
@@ -48,6 +51,8 @@ integer i;
 reg [8:0] rand_x = 9'd0;
     // Y (0 ... 767)
     reg [9:0] rand_y = 10'd0;
+
+reg [4:0] attack_timer = 0; //atk time
 
     always @(posedge clk) begin
         rand_x <= rand_x + 9'd73;
@@ -86,9 +91,21 @@ item_active <= 3'b111;
             // the camera keeps the player in the middle, but stays on the map
             cam_x <= (px < 160) ? 9'd0  : (px > 352) ? 9'd192  : px - 10'd160;
             cam_y <= (py < 120) ? 10'd0 : (py > 648) ? 10'd528 : py - 10'd120;
+// atk part
+if (is_attacking) begin //15 frame per attack 
+                attack_timer <= attack_timer + 1'b1;
+                if (attack_timer >= 5'd15) begin //decrease time here
+                    is_attacking <= 1'b0; 
+                    attack_timer <= 5'd0;
+                end
+            end else if (btn_attack) begin
+                // if click btn = atk
+                is_attacking <= 1'b1;
+                attack_timer <= 5'd0;
+            end
 //item collition check
 for (i = 0; i < NUM_ITEMS; i = i + 1) begin
-                if (item_active[i] && 
+                if (item_active[i] && (current_form == i) && 
                     (px + 16 > item_x[i]) && (px - 16 < item_x[i]) && 
                     (py + 16 > item_y[i]) && (py - 16 < item_y[i])) begin
                     
