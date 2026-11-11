@@ -14,6 +14,7 @@ module lab08_top (
     input  wire       CLK100MHZ,
     input  wire       CPU_RESETN,
     input  wire       BTNU, BTND, BTNL, BTNR,
+input  wire       BTNC, //center aka ataack btn
     output wire [3:0] VGA_R, VGA_G, VGA_B,
     output wire       VGA_HS, VGA_VS,
     output wire [1:0] LED,
@@ -44,12 +45,16 @@ wire [2:0] item_active;
     wire [9:0] px, py, cam_y;
     wire [8:0] cam_x;
     wire       back, mirror, moving, adv;
+wire       is_attacking;
+
     player u_player (.clk(clk), .rst(rst), .tick(tick), .btn({BTNU, BTND, BTNL, BTNR}),
-                     .px(px), .py(py), .cam_x(cam_x), .cam_y(cam_y),
+                     .btn_attack(BTNC), .px(px), .py(py), .cam_x(cam_x), .cam_y(cam_y),
                      .back(back), .mirror(mirror), .moving(moving), .adv(adv),
-.item_active(item_active), .current_form(current_form),
-        .flat_item_x(flat_item_x), .flat_item_y(flat_item_y)
-);
+                     .item_active(item_active), .current_form(current_form),
+                     .flat_item_x(flat_item_x), .flat_item_y(flat_item_y),
+                     .is_attacking(is_attacking)
+    );
+
 
     // ---------------- Part C : walking picture ----------------
     wire [1:0] step, walk_state;
@@ -57,14 +62,19 @@ wire [2:0] item_active;
                      .step(step), .state(walk_state));
 
     // sprite pictures: 0 stand, 1 step, 2 other step (to the front); 3-5 the same to the back
-    wire [4:0] base_frame = current_form * 5'd4;  //if have 4 frame for each form
-    wire [4:0] sprite_frame = base_frame + (back ? 5'd3 : 5'd0) + {3'd0, step};
+    wire [4:0] base_frame = current_form * 5'd4;  // each form have 4 sprite rest walk sidestand atk
+    wire [4:0] walk_sprite_frame = base_frame + (back ? 5'd3 : 5'd0) + {3'd0, step};
+    
+    // --- walk or atk (atk frame 4 in sprite) ---
+    wire [4:0] sprite_frame = is_attacking ? (base_frame + 5'd4) : walk_sprite_frame;
     assign LED = walk_state;
 
     // ---------------- picture ----------------
     vga_render u_render (.clk(clk), .x(x), .y(y), .hsync(hsync), .vsync(vsync), .video_on(video_on),
                          .px(px), .py(py), .cam_x(cam_x), .cam_y(cam_y),
                          .sprite_frame(sprite_frame), .mirror(mirror),
+                         .item_active(item_active), 
+                         .flat_item_x(flat_item_x), .flat_item_y(flat_item_y),
                          .VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B), .VGA_HS(VGA_HS), .VGA_VS(VGA_VS));
                          
    wire tick_1sec, tick_fast;

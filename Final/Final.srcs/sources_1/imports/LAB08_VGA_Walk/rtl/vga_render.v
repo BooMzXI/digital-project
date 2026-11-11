@@ -15,7 +15,7 @@ module vga_render (
     input  wire [9:0]  px, py,
     input  wire [8:0]  cam_x,
     input  wire [9:0]  cam_y,
-   input  wire [4:0]  sprite_frame,
+    input  wire [4:0]  sprite_frame,
     input  wire        mirror,
 //for item
 input  wire [2:0]  item_active,
@@ -54,7 +54,7 @@ wire [9:0] item_x [0:2];
 
     wire [7:0]  sprite_index;
     wire [11:0] sprite_color;
-    rom_1p  #(.DW(8), .AW(14), .DEPTH(9216), .FILE("sprite.mem")) u_sprite (
+    rom_1p  #(.DW(8), .AW(15), .DEPTH(32768), .FILE("sprite.mem")) u_sprite (
         .clk(clk), .addr(sprite_addr), .q(sprite_index));
     rom_lut #(.DW(12), .AW(8), .FILE("spr_pal.mem")) u_sprite_pal (
         .clk(clk), .addr(sprite_index), .q(sprite_color));
