@@ -37,13 +37,19 @@ module lab08_top (
     // one pulse per frame, at the start of the blank lines (the picture is not being drawn)
     wire tick = (x == 10'd0) && (y == 10'd480);
 
+wire [2:0] item_active;
+    wire [2:0] current_form;
+    wire [29:0] flat_item_x, flat_item_y;
     // ---------------- player and camera ----------------
     wire [9:0] px, py, cam_y;
     wire [8:0] cam_x;
     wire       back, mirror, moving, adv;
     player u_player (.clk(clk), .rst(rst), .tick(tick), .btn({BTNU, BTND, BTNL, BTNR}),
                      .px(px), .py(py), .cam_x(cam_x), .cam_y(cam_y),
-                     .back(back), .mirror(mirror), .moving(moving), .adv(adv));
+                     .back(back), .mirror(mirror), .moving(moving), .adv(adv),
+.item_active(item_active), .current_form(current_form),
+        .flat_item_x(flat_item_x), .flat_item_y(flat_item_y)
+);
 
     // ---------------- Part C : walking picture ----------------
     wire [1:0] step, walk_state;
@@ -51,7 +57,8 @@ module lab08_top (
                      .step(step), .state(walk_state));
 
     // sprite pictures: 0 stand, 1 step, 2 other step (to the front); 3-5 the same to the back
-    wire [2:0] sprite_frame = (back ? 3'd3 : 3'd0) + {1'b0, step};
+    wire [4:0] base_frame = current_form * 5'd4;  //if have 4 frame for each form
+    wire [4:0] sprite_frame = base_frame + (back ? 5'd3 : 5'd0) + {3'd0, step};
     assign LED = walk_state;
 
     // ---------------- picture ----------------
