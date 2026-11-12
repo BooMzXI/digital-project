@@ -21,6 +21,11 @@ module vga_render (
 input  wire [2:0]  item_active,
     input  wire [29:0] flat_item_x,
     input  wire [29:0] flat_item_y,
+// boss & health bar
+input  wire [9:0]  boss_x, boss_y,
+    input  wire [1:0]  boss_state,
+    input  wire [7:0]  boss_hp,
+    input  wire [6:0]  player_hp,
 //-----------------------------------------
     output reg  [3:0]  VGA_R = 0, VGA_G = 0, VGA_B = 0,
     output reg         VGA_HS = 1, VGA_VS = 1
@@ -99,6 +104,37 @@ wire [4:0] item_frame = 5'd12 + {3'b000, active_item_id};
     rom_lut #(.DW(12), .AW(8), .FILE("spr_pal.mem")) u_item_pal (
         .clk(clk), .addr(item_index), .q(item_color));
 
+// ---- Boss Sprite (e.g.start at frame16, 17, 18, 19) ----
+    wire signed [11:0] bsx = $signed({2'b0, wx}) - $signed({2'b0, boss_x}) + 12'sd16;
+    wire signed [11:0] bsy = $signed({2'b0, wy}) - $signed({2'b0, boss_y}) + 12'sd47;
+    wire on_boss = bsx >= 0 && bsx < 32 && bsy >= 0 && bsy < 48;
+    wire [4:0] boss_frame = 5'd16 + {3'b000, boss_state};
+    wire [14:0] boss_addr = boss_frame * 15'd1536 + {bsy[5:0], 5'd0} + bsx[4:0];
+    
+    wire [7:0] boss_index;
+    wire [11:0] boss_color;
+    rom_1p  #(.DW(8), .AW(15), .DEPTH(32768), .FILE("sprite.mem")) u_boss_rom (
+        .clk(clk), .addr(boss_addr), .q(boss_index));
+    rom_lut #(.DW(12), .AW(8), .FILE("spr_pal.mem")) u_boss_pal (
+        .clk(clk), .addr(boss_index), .q(boss_color));
+
+// ---- Health Bars  ----
+    // player
+    wire on_php_bg = (wx >= px - 16 && wx <= px + 15) && (wy >= py - 52 && wy <= py - 50);
+    wire [4:0] php_w = player_hp[6:1]; // หาร 2 เพื่อสเกลความยาว
+    wire on_php_fg = on_php_bg && (wx < (px - 16 + {5'b0, php_w}));
+
+    // boss
+    wire on_bhp_bg = (wx >= boss_x - 32 && wx <= boss_x + 31) && (wy >= boss_y - 52 && wy <= boss_y - 50);
+    wire [5:0] bhp_w = boss_hp[7:1]; 
+    wire on_bhp_fg = on_bhp_bg && (wx < (boss_x - 32 + {4'b0, bhp_w}));
+
+    // ---- boss attack zone ----
+    wire on_red_square = (boss_state == 2'd1) && (
+        (wx >= boss_x - 25 && wx <= boss_x + 25 && (wy == boss_y - 25 || wy == boss_y + 25 || wy == boss_y - 24 || wy == boss_y + 24)) ||
+        (wy >= boss_y - 25 && wy <= boss_y + 25 && (wx == boss_x - 25 || wx == boss_x + 25 || wx == boss_x - 24 || wx == boss_x + 24))
+    );
+
     // ---- pipeline ----
     reg on_1 = 0, see_2 = 0;
 reg on_item_1 = 0, see_item_2 = 0;
@@ -108,17 +144,31 @@ reg on_item_1 = 0, see_item_2 = 0;
 
     always @(posedge clk) begin
         // clock 1
-        on_1  <= on_sprite;
-on_item_1 <= on_item;
+        on_1        <= on_sprite;
+        on_item_1   <= on_item;
+        on_boss_1   <= on_boss;
+        on_php_bg_1 <= on_php_bg; on_php_fg_1 <= on_php_fg;
+        on_bhp_bg_1 <= on_bhp_bg; on_bhp_fg_1 <= on_bhp_fg;
+        on_rs_1     <= on_red_square;
         vid_1 <= video_on;  hs_1 <= hsync;  vs_1 <= vsync;
         // clock 2 : colour 0 of the sprite is transparent
-        see_2 <= on_1 && sprite_index != 8'd0;
-see_item_2 <= on_item_1 && (item_index != 8'd0);	
+        see_2       <= on_1 && (sprite_index != 8'd0);
+        see_item_2  <= on_item_1 && (item_index != 8'd0);	
+        see_boss_2  <= on_boss_1 && (boss_index != 8'd0);
+        on_php_bg_2 <= on_php_bg_1; on_php_fg_2 <= on_php_fg_1;
+        on_bhp_bg_2 <= on_bhp_bg_1; on_bhp_fg_2 <= on_bhp_fg_1;
+        on_rs_2     <= on_rs_1;
         vid_2 <= vid_1;     hs_2 <= hs_1;   vs_2 <= vs_1;
         // clock 3 : the screen must be black outside the picture
-        {VGA_R, VGA_G, VGA_B} <= !vid_2 ? 12'h000 : 
-                                 see_2  ? sprite_color : 
-                                 see_item_2 ? item_color : 
+       {VGA_R, VGA_G, VGA_B} <= !vid_2      ? 12'h000 : 
+                                 on_php_fg_2 ? 12'h0F0 : // player green
+                                 on_php_bg_2 ? 12'h800 : //player bg health bar red
+                                 on_bhp_fg_2 ? 12'h0F0 : //  boss green
+                                 on_bhp_bg_2 ? 12'h800 : // boss bg health bar red
+                                 on_rs_2     ? 12'hF00 : // attack zone red
+                                 see_2       ? sprite_color : 
+                                 see_item_2  ? item_color : 
+                                 see_boss_2  ? boss_color :
                                  map_color;
         VGA_HS <= hs_2;
         VGA_VS <= vs_2;

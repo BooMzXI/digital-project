@@ -47,12 +47,20 @@ wire [2:0] item_active;
     wire       back, mirror, moving, adv;
 wire       is_attacking;
 
+//boss
+wire [9:0] boss_x, boss_y;
+    wire [1:0] boss_state;
+    wire [7:0] boss_hp;
+    wire [6:0] player_hp;
+
     player u_player (.clk(clk), .rst(rst), .tick(tick), .btn({BTNU, BTND, BTNL, BTNR}),
                      .btn_attack(BTNC), .px(px), .py(py), .cam_x(cam_x), .cam_y(cam_y),
                      .back(back), .mirror(mirror), .moving(moving), .adv(adv),
                      .item_active(item_active), .current_form(current_form),
                      .flat_item_x(flat_item_x), .flat_item_y(flat_item_y),
-                     .is_attacking(is_attacking)
+                     .is_attacking(is_attacking),
+                     .boss_x(boss_x), .boss_y(boss_y), .boss_state(boss_state),
+                     .boss_hp(boss_hp), .player_hp(player_hp)
     );
 
 
@@ -70,17 +78,22 @@ wire       is_attacking;
     assign LED = walk_state;
 
     // ---------------- picture ----------------
-    vga_render u_render (.clk(clk), .x(x), .y(y), .hsync(hsync), .vsync(vsync), .video_on(video_on),
+    ga_render u_render (.clk(clk), .x(x), .y(y), .hsync(hsync), .vsync(vsync), .video_on(video_on),
                          .px(px), .py(py), .cam_x(cam_x), .cam_y(cam_y),
                          .sprite_frame(sprite_frame), .mirror(mirror),
                          .item_active(item_active), 
                          .flat_item_x(flat_item_x), .flat_item_y(flat_item_y),
+                         // ส่งสัญญาณบอสและเลือดให้จอวาด
+                         .boss_x(boss_x), .boss_y(boss_y), .boss_state(boss_state),
+                         .boss_hp(boss_hp), .player_hp(player_hp),
                          .VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B), .VGA_HS(VGA_HS), .VGA_VS(VGA_VS));
                          
-   wire tick_1sec, tick_fast;
+
    
    
 // ---------------- timer ----------------
+   wire tick_1sec, tick_fast;
+
 tick_gen #(.DIV(25_000_000)) u_tick_1sec (
     .clk(clk), .reset_n(~rst), .tick(tick_1sec)
 );
