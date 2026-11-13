@@ -11,6 +11,48 @@
 //==============================================================================
 
 //------------------------------------------------------------------------------
+// Top level
+//------------------------------------------------------------------------------
+module mod10_top #(
+    parameter integer DIV = 100_000_000          // count rate = 100 MHz / DIV
+)(
+    input  wire       CLK100MHZ,
+    input  wire       CPU_RESETN,
+    input  wire [0:0] SW,
+    output wire [3:0] LED,
+    output wire       CA, CB, CC, CD, CE, CF, CG, DP,
+    output wire [7:0] AN
+);
+    wire       tick_1hz;
+    wire       count_en = tick_1hz & SW[0];
+    wire [3:0] count;
+    wire [6:0] seg_n;                            // {g,f,e,d,c,b,a}
+
+    tick_gen #(.DIV(DIV)) u_tick_gen (
+        .clk     (CLK100MHZ),
+        .reset_n (CPU_RESETN),
+        .tick    (tick_1hz)
+    );
+
+    mod10_jk u_counter (
+        .clk     (CLK100MHZ),
+        .clear_n (CPU_RESETN),
+        .en      (count_en),
+        .count   (count)
+    );
+
+    seg7_dec u_seg7 (
+        .digit   (count),
+        .seg_n   (seg_n)
+    );
+
+    assign LED                         = count;
+    assign {CG, CF, CE, CD, CC, CB, CA} = seg_n;
+    assign DP                          = 1'b1;          // off
+    assign AN                          = 8'b1111_1110;  // AN[0] only
+endmodule
+
+//------------------------------------------------------------------------------
 // MOD-10 counter: 4 JK flip-flops on a shared clock
 // en = 0 forces J = K = 0 (hold), so the count changes only when en = 1.
 //------------------------------------------------------------------------------
@@ -108,7 +150,7 @@ endmodule
 //------------------------------------------------------------------------------
 // 7-segment decoder, active LOW: seg_n = {g,f,e,d,c,b,a}
 //------------------------------------------------------------------------------
-module seg7_dec (
+module seg7_dec (//
     input  wire [3:0] digit,
     output reg  [6:0] seg_n
 );

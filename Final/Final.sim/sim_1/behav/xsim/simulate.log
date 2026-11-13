@@ -1,25 +1,6 @@
 Time resolution is 1 ps
-==================================================
- LAB08 Part C : walk_fsm
-==================================================
-ok   : reset -> S0 (00), step = 0
-       adv  m | state y2y1 | step
-       #1   1 |     01     |  1
-       #2   1 |     10     |  0
-       #3   1 |     11     |  2
-       #4   1 |     00     |  0
-       #5   1 |     01     |  1
-       #6   1 |     10     |  0
-       #7   1 |     11     |  2
-       #8   1 |     00     |  0
-       #9   1 |     01     |  1
-       #10  1 |     10     |  0
-ok   : walking: S0 S1 S2 S3 S0 ...
-ok   : m = 0 -> back to S0 from every state
-ok   : adv = 0 -> the state is held
-ok   : 300 random clocks
-ok   : asynchronous clear (no clock needed)
-==================================================
- RESULT : PASS
-==================================================
-$finish called at time : 3690 ns : File "C:/Users/phure/Downloads/LAB08_VGA_Walk/sim/tb_walk_fsm.v" Line 146
+========================================
+ SUCCESS: Image saved as game_screen.ppm
+========================================
+$finish called at time : 49280685 ns : File "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sim_1/new/test.v" Line 60
+INFO: xsimkernel Simulation Memory Usage: 40604 KB (Peak: 40604 KB), Simulation CPU Usage: 137718 ms
