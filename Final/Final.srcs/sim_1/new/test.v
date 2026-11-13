@@ -51,8 +51,8 @@ module tb_vga_snapshot();
     // 4. ดักจับการขึ้นเฟรมใหม่ (อิงจาก VSYNC)
     always @(negedge VGA_VS) begin
         frame_count = frame_count + 1;
-        // พอวาดเฟรมที่ 1 เสร็จ (ตัดขึ้นเฟรม 2) ให้ปิดไฟล์และจบซิมูเลชัน
-        if (frame_count == 2) begin
+        // 1. แก้เป็นเลข 3 เพื่อให้ระบบทำงานจบเฟรมที่ 2 ก่อนหยุด
+        if (frame_count == 3) begin
             $fclose(file);
             $display("========================================");
             $display(" SUCCESS: Image saved as game_screen.ppm");
@@ -63,7 +63,8 @@ module tb_vga_snapshot();
 
     // 5. บันทึกค่าสี 12-bit ลงไฟล์เฉพาะช่วงที่วาดภาพในเฟรมที่ 1
     always @(posedge uut.clk) begin
-        if (frame_count == 1 && uut.video_on) begin
+        // 2. แก้เป็นเลข 2 เพื่อถ่ายรูปในเฟรมที่ 2 แทนเฟรมแรก
+        if (frame_count == 2 && uut.video_on) begin
             $fwrite(file, "%d %d %d\n", VGA_R, VGA_G, VGA_B);
         end
     end

@@ -50,7 +50,7 @@ module lab08_top (
     wire [159:0] flat_minion_x, flat_minion_y;
     wire [95:0]  flat_minion_hp;
     wire [1:0]   minion_state;
-    wire         barrier_active;
+    wire [3:0]   barrier_active;
 
     player u_player (.clk(clk), .rst(rst), .tick(tick), .btn({BTNU, BTND, BTNL, BTNR}),
                      .btn_attack(BTNC), .sw0(SW[0]),

@@ -35,7 +35,7 @@ module player (
     output wire [159:0] flat_minion_y,
     output wire [95:0]  flat_minion_hp,
     output reg  [1:0]   minion_state = 0,
-    output wire         barrier_active
+    output wire [3:0]   barrier_active
 );
     // Dynamic Speed
     wire [2:0] step_size = sw0 ? 3'd5 : 3'd2;
@@ -71,9 +71,10 @@ module player (
     wire [3:0] base_idx = {current_form[1:0], 2'b00};
     
     // Barrier is active if any of the 4 minions guarding the current item is alive
-    assign barrier_active = (current_form < 4) && (
-        m_hp[base_idx]>0 || m_hp[base_idx+1]>0 || m_hp[base_idx+2]>0 || m_hp[base_idx+3]>0
-    );
+    assign barrier_active[0] = (current_form == 3'd0 && (m_hp[0]>0 || m_hp[1]>0 || m_hp[2]>0 || m_hp[3]>0));
+    assign barrier_active[1] = (current_form < 3'd1) || (current_form == 3'd1 && (m_hp[4]>0 || m_hp[5]>0 || m_hp[6]>0 || m_hp[7]>0));
+    assign barrier_active[2] = (current_form < 3'd2) || (current_form == 3'd2 && (m_hp[8]>0 || m_hp[9]>0 || m_hp[10]>0 || m_hp[11]>0));
+    assign barrier_active[3] = (current_form < 3'd3) || (current_form == 3'd3 && (m_hp[12]>0 || m_hp[13]>0 || m_hp[14]>0 || m_hp[15]>0));
     
     wire [9:0] target_x = item_x[current_form];
     wire [9:0] target_y = item_y[current_form];

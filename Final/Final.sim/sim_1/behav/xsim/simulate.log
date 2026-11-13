@@ -1,0 +1,6 @@
+Time resolution is 1 ps
+========================================
+ SUCCESS: Image saved as game_screen.ppm
+========================================
+$finish called at time : 49280685 ns : File "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sim_1/new/test.v" Line 60
+INFO: xsimkernel Simulation Memory Usage: 40604 KB (Peak: 40604 KB), Simulation CPU Usage: 137718 ms

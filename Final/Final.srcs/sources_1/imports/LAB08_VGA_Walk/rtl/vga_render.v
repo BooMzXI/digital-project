@@ -134,13 +134,14 @@ module vga_render (
     );
 
     // ---- Health Bars ----
-    wire on_php_bg = (wx >= px - 16 && wx <= px + 15) && (wy >= py - 52 && wy <= py - 50);
-    wire [5:0] php_w = player_hp[7:2]; // scale HP
-    wire on_php_fg = on_php_bg && (wx < (px - 16 + {4'b0, php_w}));
+    wire [6:0] max_w = player_max_hp[7:1];
+    wire [6:0] php_w = player_hp[7:1]; 
+    wire on_php_bg = (wx >= px - 16 && wx < (px - 16 + max_w)) && (wy >= py - 52 && wy <= py - 50);
+    wire on_php_fg = on_php_bg && (wx < (px - 16 + php_w));
 
     wire on_bhp_bg = (wx >= boss_x - 32 && wx <= boss_x + 31) && (wy >= boss_y - 100 && wy <= boss_y - 98);
     wire [6:0] bhp_w = boss_hp[7:1]; 
-    wire on_bhp_fg = on_bhp_bg && (wx < (boss_x - 32 + {3'b0, bhp_w}));
+    wire on_bhp_fg = on_bhp_bg && (wx < (boss_x - 32 + bhp_w));
 
     // ---- Boss/Minion Attack Warning (Red Square) ----
     wire on_boss_warn = (boss_state == 2'd1) && (

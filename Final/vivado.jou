@@ -51,3 +51,13 @@ import_files -force -norecurse C:/Users/phure/Downloads/Lab06/mod10_jk.v
 update_compile_order -fileset sources_1
 launch_simulation
 source tb_vga_snapshot.tcl
+close_sim
+launch_simulation
+source tb_vga_snapshot.tcl
+close_sim
+launch_simulation
+source tb_vga_snapshot.tcl
+close_sim
+launch_simulation
+source tb_vga_snapshot.tcl
+close_sim
