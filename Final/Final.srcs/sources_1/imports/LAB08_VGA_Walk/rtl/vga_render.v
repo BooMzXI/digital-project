@@ -137,7 +137,10 @@ wire [4:0] item_frame = 5'd12 + {3'b000, active_item_id};
 
     // ---- pipeline ----
     reg on_1 = 0, see_2 = 0;
-reg on_item_1 = 0, see_item_2 = 0;
+    reg on_item_1 = 0, see_item_2 = 0;
+    reg on_boss_1 = 0, see_boss_2 = 0;
+    reg on_php_bg_1=0, on_php_fg_1=0, on_bhp_bg_1=0, on_bhp_fg_1=0, on_rs_1=0;
+    reg on_php_bg_2=0, on_php_fg_2=0, on_bhp_bg_2=0, on_bhp_fg_2=0, on_rs_2=0;
     reg vid_1 = 0, vid_2 = 0;
     reg hs_1 = 1, hs_2 = 1, vs_1 = 1, vs_2 = 1;
 
