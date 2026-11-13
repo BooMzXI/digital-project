@@ -78,12 +78,11 @@ wire [9:0] boss_x, boss_y;
     assign LED = walk_state;
 
     // ---------------- picture ----------------
-    ga_render u_render (.clk(clk), .x(x), .y(y), .hsync(hsync), .vsync(vsync), .video_on(video_on),
+    vga_render u_render (.clk(clk), .x(x), .y(y), .hsync(hsync), .vsync(vsync), .video_on(video_on),
                          .px(px), .py(py), .cam_x(cam_x), .cam_y(cam_y),
                          .sprite_frame(sprite_frame), .mirror(mirror),
                          .item_active(item_active), 
                          .flat_item_x(flat_item_x), .flat_item_y(flat_item_y),
-                         // ส่งสัญญาณบอสและเลือดให้จอวาด
                          .boss_x(boss_x), .boss_y(boss_y), .boss_state(boss_state),
                          .boss_hp(boss_hp), .player_hp(player_hp),
                          .VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B), .VGA_HS(VGA_HS), .VGA_VS(VGA_VS));
