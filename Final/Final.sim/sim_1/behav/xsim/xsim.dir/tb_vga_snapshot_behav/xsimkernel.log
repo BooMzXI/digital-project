@@ -1,0 +1,4 @@
+Running: xsim.dir/tb_vga_snapshot_behav/xsimk.exe -simmode gui -wdb tb_vga_snapshot_behav.wdb -simrunnum 0 -socket 54355
+Design successfully loaded
+Design Loading Memory Usage: 31680 KB (Peak: 31680 KB)
+Design Loading CPU Usage: 733 ms

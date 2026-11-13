@@ -1,0 +1,16 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  \
+"../../../../Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/clk_gen.v" \
+"../../../../Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/lab08.v" \
+"../../../../Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/lab08_top.v" \
+"../../../../Final.srcs/sources_1/imports/Lab06/mod10_jk.v" \
+"../../../../Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/player.v" \
+"../../../../Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/roms.v" \
+"../../../../Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/vga_render.v" \
+"../../../../Final.srcs/sim_1/new/test.v" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

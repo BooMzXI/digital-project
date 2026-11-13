@@ -1,7 +1,7 @@
 Vivado Simulator v2024.2.0
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
-Running: C:/Xilinx/Vivado/2024.2/bin/unwrapped/win64.o/xelab.exe --incr --debug typical --relax --mt 2 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip --snapshot tb_walk_fsm_behav xil_defaultlib.tb_walk_fsm xil_defaultlib.glbl -log elaborate.log 
+Running: C:/Xilinx/Vivado/2024.2/bin/unwrapped/win64.o/xelab.exe --incr --debug typical --relax --mt 2 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip --snapshot tb_vga_snapshot_behav xil_defaultlib.tb_vga_snapshot xil_defaultlib.glbl -log elaborate.log 
 Using 2 slave threads.
 Starting static elaboration
 Pass Through NonSizing Optimizer
@@ -9,8 +9,22 @@ Completed static elaboration
 Starting simulation data flow analysis
 Completed simulation data flow analysis
 Time Resolution for simulation is 1ps
+Compiling module unisims_ver.MMCME2_ADV(CLKFBOUT_MULT_F=8.0,C...
+Compiling module unisims_ver.MMCME2_BASE(CLKFBOUT_MULT_F=8.0,...
+Compiling module unisims_ver.BUFG
+Compiling module xil_defaultlib.clk_gen
+Compiling module xil_defaultlib.vga_sync_default
+Compiling module xil_defaultlib.player
 Compiling module xil_defaultlib.dffe_aclr
 Compiling module xil_defaultlib.walk_fsm
-Compiling module xil_defaultlib.tb_walk_fsm
+Compiling module xil_defaultlib.rom_1p(DW=7,AW=19,DEPTH=393216,F...
+Compiling module xil_defaultlib.rom_lut(AW=7,FILE="map_pal.mem")
+Compiling module xil_defaultlib.rom_1p(AW=15,DEPTH=32768,FILE="s...
+Compiling module xil_defaultlib.rom_lut(FILE="spr_pal.mem")
+Compiling module xil_defaultlib.vga_render
+Compiling module xil_defaultlib.tick_gen
+Compiling module xil_defaultlib.seg7_dec
+Compiling module xil_defaultlib.lab08_top
+Compiling module xil_defaultlib.tb_vga_snapshot
 Compiling module xil_defaultlib.glbl
-Built simulation snapshot tb_walk_fsm_behav
+Built simulation snapshot tb_vga_snapshot_behav
