@@ -93,10 +93,10 @@ module walk_fsm (
     wire y2 = state[1];
 
     //========== Part C : WRITE THE EQUATIONS FROM YOUR K-MAPS ==========
-    wire D1 = m&&~(y1);                  // next value of y1
-    wire D2 = (m&&~(y1)&&y2)||(m&&~(y2)&&y1);                  // next value of y2
-    assign step[0] = ~y2&&y1;
-    assign step[1] = y2&&y1;
+    wire D1 = m&~y1;                  // next value of y1
+    wire D2 = m&y1;                  // next value of y2
+    assign step[0] = y1;
+    assign step[1] = y2;
     //==================================================================
 
     dffe_aclr FF1 (.D(D1), .En(adv), .Clock(clk), .Clearn(clear_n), .Q(state[0]));
