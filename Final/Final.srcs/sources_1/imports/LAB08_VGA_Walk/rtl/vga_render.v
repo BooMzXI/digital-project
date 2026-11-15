@@ -19,7 +19,6 @@ module vga_render (
     input  wire [1:0]   minion_state,
     input  wire         barrier_active,
     
-    // --- Game State Signals ---
     input  wire         boss_dying,
     input  wire [15:0]  flat_minion_dying,
     input  wire         game_won,
@@ -46,12 +45,10 @@ module vga_render (
     wire [8:0] gx = x[9:1], gy = y[9:1];
     wire [9:0] wx = cam_x + gx, wy = cam_y + gy;
 
-    // --- Map Background ---
     wire [6:0] map_index; wire [11:0] map_color;
     rom_1p #(.DW(7), .AW(19), .DEPTH(512*768), .FILE("map.mem")) u_map (.clk(clk), .addr({wy, wx[8:0]}), .q(map_index));
     rom_lut #(.DW(12), .AW(7), .FILE("map_pal.mem")) u_map_pal (.clk(clk), .addr(map_index), .q(map_color));
 
-    // --- Player Sprite (64x64) ---
     wire signed [11:0] sx = $signed({2'b0, wx}) - $signed({2'b0, px}) + 12'sd32;
     wire signed [11:0] sy = $signed({2'b0, wy}) - $signed({2'b0, py}) + 12'sd63;
     wire        on_sprite = sx >= 0 && sx < 64 && sy >= 0 && sy < 64;
@@ -61,7 +58,6 @@ module vga_render (
     rom_1p #(.DW(8), .AW(17), .DEPTH(110592), .FILE("sprite.mem")) u_sprite (.clk(clk), .addr(sprite_addr), .q(sprite_index));
     rom_lut #(.DW(12), .AW(8), .FILE("spr_pal.mem")) u_sprite_pal (.clk(clk), .addr(sprite_index), .q(sprite_color));
 
-    // --- Item Sprites (64x64) ---
     reg on_item = 0; reg [1:0] active_item_id = 0; reg [5:0] item_col = 0; reg [5:0] item_row = 0;
     integer i;
     always @(*) begin
@@ -78,7 +74,6 @@ module vga_render (
     rom_1p #(.DW(8), .AW(17), .DEPTH(110592), .FILE("sprite.mem")) u_item_rom (.clk(clk), .addr(item_addr), .q(item_index));
     rom_lut #(.DW(12), .AW(8), .FILE("spr_pal.mem")) u_item_pal (.clk(clk), .addr(item_index), .q(item_color));
 
-    // --- Minion Sprites (64x64) ---
     reg on_minion = 0; reg [5:0] mx_col = 0; reg [5:0] my_row = 0; reg minion_is_dying = 0;
     always @(*) begin
         on_minion = 0; mx_col = 0; my_row = 0; minion_is_dying = 0;
@@ -89,14 +84,12 @@ module vga_render (
             end
         end
     end
-    wire [4:0] minion_frame = minion_is_dying ? 5'd26 : (5'd24 + {3'b000, minion_state}); // Frame 26 = Cry/Death
+    wire [4:0] minion_frame = minion_is_dying ? 5'd26 : (5'd24 + {3'b000, minion_state});
     wire [16:0] minion_addr = minion_frame * 17'd4096 + {my_row, 6'd0} + {1'b0, mx_col};
     wire [7:0] minion_index; wire [11:0] minion_color;
     rom_1p #(.DW(8), .AW(17), .DEPTH(110592), .FILE("sprite.mem")) u_minion_rom (.clk(clk), .addr(minion_addr), .q(minion_index));
     rom_lut #(.DW(12), .AW(8), .FILE("spr_pal.mem")) u_minion_pal (.clk(clk), .addr(minion_index), .q(minion_color));
 
-    // --- Boss Sprites (128x128 Scaled 2x) & Win Screen ---
-    // Centered coordinates for Win Screen (128x128 in middle of 640x480 screen)
     wire signed [11:0] end_sx = $signed({2'b0, x}) - 12'sd256; 
     wire signed [11:0] end_sy = $signed({2'b0, y}) - 12'sd176; 
     wire on_end_sprite = game_won && (end_sx >= 0 && end_sx < 128 && end_sy >= 0 && end_sy < 128);
@@ -115,24 +108,41 @@ module vga_render (
     rom_1p #(.DW(8), .AW(17), .DEPTH(110592), .FILE("sprite.mem")) u_boss_rom (.clk(clk), .addr(boss_addr), .q(boss_index));
     rom_lut #(.DW(12), .AW(8), .FILE("spr_pal.mem")) u_boss_pal (.clk(clk), .addr(boss_index), .q(boss_color));
 
-    // --- Active Item Barrier ---
+    // --- Expanded Red Barrier Box ---
     wire [9:0] tgt_x = (current_form < 4) ? item_x[current_form] : 10'd0;
     wire [9:0] tgt_y = (current_form < 4) ? item_y[current_form] : 10'd0;
-    wire on_barrier = barrier_active && ((wx >= tgt_x - 36 && wx <= tgt_x + 36 && (wy == tgt_y - 36 || wy == tgt_y + 36 || wy == tgt_y - 35 || wy == tgt_y + 35)) ||
-                                         (wy >= tgt_y - 36 && wy <= tgt_y + 36 && (wx == tgt_x - 36 || wx == tgt_x + 36 || wx == tgt_x - 35 || wx == tgt_x + 35)));
+    wire on_barrier = barrier_active && ((wx >= tgt_x - 45 && wx <= tgt_x + 45 && (wy == tgt_y - 45 || wy == tgt_y + 45 || wy == tgt_y - 44 || wy == tgt_y + 44)) ||
+                                         (wy >= tgt_y - 45 && wy <= tgt_y + 45 && (wx == tgt_x - 45 || wx == tgt_x + 45 || wx == tgt_x - 44 || wx == tgt_x + 44)));
 
-    // --- Health Bars ---
+    // --- Health Bars (Moved up above all heads) ---
     wire [6:0] max_w = player_max_hp[7:1]; wire [6:0] php_w = player_hp[7:1]; 
-    wire on_php_bg = (wx >= px - 16 && wx < (px - 16 + max_w)) && (wy >= py - 52 && wy <= py - 50);
+    wire on_php_bg = (wx >= px - 16 && wx < (px - 16 + max_w)) && (wy >= py - 72 && wy <= py - 70);
     wire on_php_fg = on_php_bg && (wx < (px - 16 + php_w));
-    wire on_bhp_bg = (wx >= boss_x - 32 && wx <= boss_x + 31) && (wy >= boss_y - 130 && wy <= boss_y - 128); // Boss HP bar slightly higher
+    
+    wire on_bhp_bg = (wx >= boss_x - 32 && wx <= boss_x + 31) && (wy >= boss_y - 140 && wy <= boss_y - 137); 
     wire [6:0] bhp_w = boss_hp[7:1]; 
     wire on_bhp_fg = on_bhp_bg && (wx < (boss_x - 32 + bhp_w));
+    
+    // --- Added Minion Health Bars ---
+    reg on_mhp_bg_c = 0; reg on_mhp_fg_c = 0;
+    always @(*) begin
+        on_mhp_bg_c = 0; on_mhp_fg_c = 0;
+        for (i = 0; i < 16; i = i + 1) begin
+            if (m_hp[i] > 0) begin
+                if (wx >= m_x[i] - 15 && wx < m_x[i] + 15 && wy >= m_y[i] - 72 && wy <= m_y[i] - 70) begin
+                    on_mhp_bg_c = 1'b1;
+                    if (wx < m_x[i] - 15 + m_hp[i]) on_mhp_fg_c = 1'b1; // Bar width 30px (Minion max HP is 30)
+                end
+            end
+        end
+    end
+    wire on_mhp_bg = on_mhp_bg_c;
+    wire on_mhp_fg = on_mhp_fg_c;
 
-    // --- Warning Rings (Pre-cry State 1) ---
+    // --- Expanded Warning Rings ---
     wire on_boss_warn = (boss_state == 2'd1) && (boss_hp > 0) && (
-        (wx >= boss_x - 60 && wx <= boss_x + 60 && (wy == boss_y - 110 || wy == boss_y + 20 || wy == boss_y - 109 || wy == boss_y + 19)) ||
-        (wy >= boss_y - 110 && wy <= boss_y + 20 && (wx == boss_x - 60 || wx == boss_x + 60 || wx == boss_x - 59 || wx == boss_x + 59))
+        (wx >= boss_x - 70 && wx <= boss_x + 70 && (wy == boss_y - 130 || wy == boss_y + 10 || wy == boss_y - 129 || wy == boss_y + 9)) ||
+        (wy >= boss_y - 130 && wy <= boss_y + 10 && (wx == boss_x - 70 || wx == boss_x + 70 || wx == boss_x - 69 || wx == boss_x + 69))
     );
     
     reg on_minion_warn = 0;
@@ -141,8 +151,8 @@ module vga_render (
         if (minion_state == 2'd1) begin
             for (i = 0; i < 16; i = i + 1) begin
                 if (m_hp[i] > 0) begin
-                    if ((wx >= m_x[i] - 25 && wx <= m_x[i] + 25 && (wy == m_y[i] - 55 || wy == m_y[i] + 5 || wy == m_y[i] - 54 || wy == m_y[i] + 4)) ||
-                        (wy >= m_y[i] - 55 && wy <= m_y[i] + 5 && (wx == m_x[i] - 25 || wx == m_x[i] + 25 || wx == m_x[i] - 24 || wx == m_x[i] + 24))) begin
+                    if ((wx >= m_x[i] - 35 && wx <= m_x[i] + 35 && (wy == m_y[i] - 65 || wy == m_y[i] + 5 || wy == m_y[i] - 64 || wy == m_y[i] + 4)) ||
+                        (wy >= m_y[i] - 65 && wy <= m_y[i] + 5 && (wx == m_x[i] - 35 || wx == m_x[i] + 35 || wx == m_x[i] - 34 || wx == m_x[i] + 34))) begin
                         on_minion_warn = 1'b1;
                     end
                 end
@@ -150,25 +160,26 @@ module vga_render (
         end
     end
     
-    // ---------------- 3-Stage Pipeline ----------------
     reg on_1=0, see_2=0, on_item_1=0, see_item_2=0;
     reg on_minion_1=0, see_minion_2=0, on_boss_1=0, see_boss_2=0;
     reg on_bar_1=0, on_bar_2=0, on_warn_1=0, on_warn_2=0;
     reg on_php_bg_1=0, on_php_fg_1=0, on_bhp_bg_1=0, on_bhp_fg_1=0;
+    reg on_mhp_bg_1=0, on_mhp_fg_1=0, on_mhp_bg_2=0, on_mhp_fg_2=0; // Minion health bar wires
     reg on_php_bg_2=0, on_php_fg_2=0, on_bhp_bg_2=0, on_bhp_fg_2=0;
     reg boss_dying_1=0, boss_dying_2=0, minion_dying_1=0, minion_dying_2=0;
     reg game_won_1=0, game_won_2=0;
     reg vid_1=0, vid_2=0, hs_1=1, hs_2=1, vs_1=1, vs_2=1;
 
     always @(posedge clk) begin
-        // --- Clock 1: Bounding Box Check ---
+        // clock 1
         on_1 <= game_won ? 0 : on_sprite; on_item_1 <= on_item; on_boss_1 <= on_boss_eval; on_minion_1 <= on_minion;
         on_bar_1 <= on_barrier; on_warn_1 <= on_boss_warn | on_minion_warn;
         on_php_bg_1 <= on_php_bg; on_php_fg_1 <= on_php_fg; on_bhp_bg_1 <= on_bhp_bg; on_bhp_fg_1 <= on_bhp_fg;
+        on_mhp_bg_1 <= on_mhp_bg; on_mhp_fg_1 <= on_mhp_fg;
         boss_dying_1 <= boss_dying; minion_dying_1 <= minion_is_dying; game_won_1 <= game_won;
         vid_1 <= video_on; hs_1 <= hsync; vs_1 <= vsync;
         
-        // --- Clock 2: ROM Lookup ---
+        // clock 2
         see_2        <= on_1 && (sprite_index != 8'd0);
         see_item_2   <= on_item_1 && (item_index != 8'd0);	
         see_boss_2   <= on_boss_1 && (boss_index != 8'd0);
@@ -176,17 +187,18 @@ module vga_render (
         on_bar_2 <= on_bar_1; on_warn_2 <= on_warn_1;
         on_php_bg_2 <= on_php_bg_1; on_php_fg_2 <= on_php_fg_1;
         on_bhp_bg_2 <= on_bhp_bg_1; on_bhp_fg_2 <= on_bhp_fg_1;
+        on_mhp_bg_2 <= on_mhp_bg_1; on_mhp_fg_2 <= on_mhp_fg_1;
         boss_dying_2 <= boss_dying_1; minion_dying_2 <= minion_dying_1; game_won_2 <= game_won_1;
         vid_2 <= vid_1; hs_2 <= hs_1; vs_2 <= vs_1;
         
-        // --- Clock 3: Multiplexer (Palette Fetch & Overlays) ---
-        // Tint dying sprites RED using {4'hF, color[7:0]}
+        // clock 3
         {VGA_R, VGA_G, VGA_B} <= !vid_2 ? 12'h000 : 
-                                 game_won_2  ? (see_boss_2 ? boss_color : 12'h000) : // Win Screen (Black + Boss)
+                                 game_won_2  ? (see_boss_2 ? boss_color : 12'h000) : 
                                  on_php_fg_2 ? 12'h0F0 : on_php_bg_2 ? 12'h800 :
                                  on_bhp_fg_2 ? 12'h0F0 : on_bhp_bg_2 ? 12'h800 : 
-                                 on_bar_2    ? 12'hF00 : // Red Barrier
-                                 on_warn_2   ? 12'hF00 : // Attack Warning Ring
+                                 on_mhp_fg_2 ? 12'h0F0 : on_mhp_bg_2 ? 12'h800 : // Insert Minion health bar colors here
+                                 on_bar_2    ? 12'hF00 : 
+                                 on_warn_2   ? 12'hF00 : 
                                  see_2       ? sprite_color : 
                                  see_boss_2  ? (boss_dying_2 ? {4'hF, boss_color[7:0]} : boss_color) : 
                                  see_minion_2? (minion_dying_2 ? {4'hF, minion_color[7:0]} : minion_color) :
