@@ -13,12 +13,15 @@ module vga_render (
     input  wire [39:0] flat_item_x, flat_item_y,
     input  wire [9:0]  boss_x, boss_y,
     input  wire [1:0]  boss_state,
-    input  wire [7:0]  boss_hp, player_hp, player_max_hp,
+    
+    // Expanded widths
+    input  wire [16:0] boss_hp, 
+    input  wire [8:0]  player_hp, player_max_hp,
     input  wire [159:0] flat_minion_x, flat_minion_y,
-    input  wire [95:0]  flat_minion_hp,
+    input  wire [207:0] flat_minion_hp,
+    
     input  wire [1:0]   minion_state,
     input  wire         barrier_active,
-    
     input  wire         boss_dying,
     input  wire [15:0]  flat_minion_dying,
     input  wire         game_won,
@@ -27,7 +30,7 @@ module vga_render (
     output reg         VGA_HS = 1, VGA_VS = 1
 );
     wire [9:0] item_x [0:3], item_y [0:3], m_x [0:15], m_y [0:15];
-    wire [5:0] m_hp [0:15]; wire m_dying [0:15];
+    wire [12:0] m_hp [0:15]; wire m_dying [0:15];
     
     assign {item_x[3], item_x[2], item_x[1], item_x[0]} = flat_item_x;
     assign {item_y[3], item_y[2], item_y[1], item_y[0]} = flat_item_y;
@@ -37,7 +40,7 @@ module vga_render (
         for (g=0; g<16; g=g+1) begin : unpack_m
             assign m_x[g] = flat_minion_x[g*10 +: 10];
             assign m_y[g] = flat_minion_y[g*10 +: 10];
-            assign m_hp[g] = flat_minion_hp[g*6 +: 6];
+            assign m_hp[g] = flat_minion_hp[g*13 +: 13];
             assign m_dying[g] = flat_minion_dying[g];
         end
     endgenerate
@@ -95,12 +98,14 @@ module vga_render (
     wire on_end_sprite = game_won && (end_sx >= 0 && end_sx < 128 && end_sy >= 0 && end_sy < 128);
     wire [5:0] esx = end_sx[6:1], esy = end_sy[6:1];
 
-    wire signed [11:0] bsx_2x = $signed({2'b0, wx}) - $signed({2'b0, boss_x}) + 12'sd64;
-    wire signed [11:0] bsy_2x = $signed({2'b0, wy}) - $signed({2'b0, boss_y}) + 12'sd127;
-    wire on_boss = (boss_hp > 0 || boss_dying) && (bsx_2x >= 0 && bsx_2x < 128 && bsy_2x >= 0 && bsy_2x < 128);
+    wire signed [11:0] bsx_1_5x = $signed({2'b0, wx}) - $signed({2'b0, boss_x}) + 12'sd48; 
+    wire signed [11:0] bsy_1_5x = $signed({2'b0, wy}) - $signed({2'b0, boss_y}) + 12'sd95; 
+    wire on_boss = (boss_hp > 0 || boss_dying) && (bsx_1_5x >= 0 && bsx_1_5x < 96 && bsy_1_5x >= 0 && bsy_1_5x < 96);
     wire on_boss_eval = game_won ? on_end_sprite : on_boss;
     
-    wire [5:0] bsx = bsx_2x[6:1], bsy = bsy_2x[6:1]; 
+    wire [5:0] bsx = (bsx_1_5x[6:0] * 7'd171) >> 8; 
+    wire [5:0] bsy = (bsy_1_5x[6:0] * 7'd171) >> 8; 
+    
     wire [4:0] boss_frame = boss_dying ? 5'd26 : (5'd24 + {3'b000, boss_state});
     wire [16:0] boss_addr = game_won ? (5'd26 * 17'd4096 + {esy, 6'd0} + {1'b0, esx}) : (boss_frame * 17'd4096 + {bsy, 6'd0} + {1'b0, bsx});
     
@@ -108,30 +113,50 @@ module vga_render (
     rom_1p #(.DW(8), .AW(17), .DEPTH(110592), .FILE("sprite.mem")) u_boss_rom (.clk(clk), .addr(boss_addr), .q(boss_index));
     rom_lut #(.DW(12), .AW(8), .FILE("spr_pal.mem")) u_boss_pal (.clk(clk), .addr(boss_index), .q(boss_color));
 
-    // --- Expanded Red Barrier Box ---
-    wire [9:0] tgt_x = (current_form < 4) ? item_x[current_form] : 10'd0;
-    wire [9:0] tgt_y = (current_form < 4) ? item_y[current_form] : 10'd0;
-    wire on_barrier = barrier_active && ((wx >= tgt_x - 45 && wx <= tgt_x + 45 && (wy == tgt_y - 45 || wy == tgt_y + 45 || wy == tgt_y - 44 || wy == tgt_y + 44)) ||
-                                         (wy >= tgt_y - 45 && wy <= tgt_y + 45 && (wx == tgt_x - 45 || wx == tgt_x + 45 || wx == tgt_x - 44 || wx == tgt_x + 44)));
+    reg on_barrier_comb;
+    always @(*) begin
+        on_barrier_comb = 1'b0;
+        for (i = 0; i < 4; i = i + 1) begin
+            if (barrier_active[i]) begin
+                if ((wx >= item_x[i] - 45 && wx <= item_x[i] + 45 && (wy == item_y[i] - 45 || wy == item_y[i] + 45 || wy == item_y[i] - 44 || wy == item_y[i] + 44)) ||
+                    (wy >= item_y[i] - 45 && wy <= item_y[i] + 45 && (wx == item_x[i] - 45 || wx == item_x[i] + 45 || wx == item_x[i] - 44 || wx == item_x[i] + 44))) begin
+                    on_barrier_comb = 1'b1;
+                end
+            end
+        end
+    end
+    wire on_barrier = on_barrier_comb;
 
-    // --- Health Bars (Moved up above all heads) ---
-    wire [6:0] max_w = player_max_hp[7:1]; wire [6:0] php_w = player_hp[7:1]; 
-    wire on_php_bg = (wx >= px - 16 && wx < (px - 16 + max_w)) && (wy >= py - 72 && wy <= py - 70);
-    wire on_php_fg = on_php_bg && (wx < (px - 16 + php_w));
+    // --- Dynamic Player Health Bar (Centered safely) ---
+    wire [7:0] max_w = player_max_hp[8:1]; // Max 300 / 2 = 150 px wide
+    wire [7:0] php_w = player_hp[8:1]; 
+    wire [9:0] php_start = (px > 75) ? px - 75 : 10'd0; // Prevent screen underflow
     
-    wire on_bhp_bg = (wx >= boss_x - 32 && wx <= boss_x + 31) && (wy >= boss_y - 140 && wy <= boss_y - 137); 
-    wire [6:0] bhp_w = boss_hp[7:1]; 
-    wire on_bhp_fg = on_bhp_bg && (wx < (boss_x - 32 + bhp_w));
+    wire on_php_bg = (wx >= php_start && wx < (php_start + max_w)) && (wy >= py - 72 && wy <= py - 70);
+    wire on_php_fg = on_php_bg && (wx < (php_start + php_w));
     
-    // --- Added Minion Health Bars ---
+    // --- Scaled Boss Health Bar (Width approx 97 px based on 100k HP) ---
+    wire on_bhp_bg = (wx >= boss_x - 48 && wx <= boss_x + 48) && (wy >= boss_y - 110 && wy <= boss_y - 107); 
+    wire [6:0] bhp_w = boss_hp[16:10]; // 100,000 >> 10 = ~97 pixels wide
+    wire on_bhp_fg = on_bhp_bg && (wx < (boss_x - 48 + bhp_w));
+    
+    // --- Fixed-width Minion Health Bars (Scaled to always fit 30px) ---
     reg on_mhp_bg_c = 0; reg on_mhp_fg_c = 0;
+    reg [4:0] cur_mhp_w;
     always @(*) begin
         on_mhp_bg_c = 0; on_mhp_fg_c = 0;
         for (i = 0; i < 16; i = i + 1) begin
             if (m_hp[i] > 0) begin
                 if (wx >= m_x[i] - 15 && wx < m_x[i] + 15 && wy >= m_y[i] - 72 && wy <= m_y[i] - 70) begin
                     on_mhp_bg_c = 1'b1;
-                    if (wx < m_x[i] - 15 + m_hp[i]) on_mhp_fg_c = 1'b1; // Bar width 30px (Minion max HP is 30)
+                    
+                    // Hardware-friendly approximations to scale vastly different HPs into a 30px bar
+                    if (i < 4) cur_mhp_w = m_hp[i] * 6;                     // Form 0: max 5 HP * 6 = 30
+                    else if (i < 8) cur_mhp_w = (m_hp[i] * 77) >> 7;        // Form 1: max 50 HP 
+                    else if (i < 12) cur_mhp_w = (m_hp[i] * 31) >> 9;       // Form 2: max 500 HP 
+                    else cur_mhp_w = (m_hp[i] * 25) >> 12;                  // Form 3: max 5000 HP 
+                    
+                    if (wx < m_x[i] - 15 + cur_mhp_w) on_mhp_fg_c = 1'b1;
                 end
             end
         end
@@ -139,10 +164,9 @@ module vga_render (
     wire on_mhp_bg = on_mhp_bg_c;
     wire on_mhp_fg = on_mhp_fg_c;
 
-    // --- Expanded Warning Rings ---
     wire on_boss_warn = (boss_state == 2'd1) && (boss_hp > 0) && (
-        (wx >= boss_x - 70 && wx <= boss_x + 70 && (wy == boss_y - 130 || wy == boss_y + 10 || wy == boss_y - 129 || wy == boss_y + 9)) ||
-        (wy >= boss_y - 130 && wy <= boss_y + 10 && (wx == boss_x - 70 || wx == boss_x + 70 || wx == boss_x - 69 || wx == boss_x + 69))
+        (wx >= boss_x - 55 && wx <= boss_x + 55 && (wy == boss_y - 100 || wy == boss_y + 10 || wy == boss_y - 99 || wy == boss_y + 9)) ||
+        (wy >= boss_y - 100 && wy <= boss_y + 10 && (wx == boss_x - 55 || wx == boss_x + 55 || wx == boss_x - 54 || wx == boss_x + 54))
     );
     
     reg on_minion_warn = 0;
@@ -164,7 +188,7 @@ module vga_render (
     reg on_minion_1=0, see_minion_2=0, on_boss_1=0, see_boss_2=0;
     reg on_bar_1=0, on_bar_2=0, on_warn_1=0, on_warn_2=0;
     reg on_php_bg_1=0, on_php_fg_1=0, on_bhp_bg_1=0, on_bhp_fg_1=0;
-    reg on_mhp_bg_1=0, on_mhp_fg_1=0, on_mhp_bg_2=0, on_mhp_fg_2=0; // Minion health bar wires
+    reg on_mhp_bg_1=0, on_mhp_fg_1=0, on_mhp_bg_2=0, on_mhp_fg_2=0; 
     reg on_php_bg_2=0, on_php_fg_2=0, on_bhp_bg_2=0, on_bhp_fg_2=0;
     reg boss_dying_1=0, boss_dying_2=0, minion_dying_1=0, minion_dying_2=0;
     reg game_won_1=0, game_won_2=0;
@@ -196,7 +220,7 @@ module vga_render (
                                  game_won_2  ? (see_boss_2 ? boss_color : 12'h000) : 
                                  on_php_fg_2 ? 12'h0F0 : on_php_bg_2 ? 12'h800 :
                                  on_bhp_fg_2 ? 12'h0F0 : on_bhp_bg_2 ? 12'h800 : 
-                                 on_mhp_fg_2 ? 12'h0F0 : on_mhp_bg_2 ? 12'h800 : // Insert Minion health bar colors here
+                                 on_mhp_fg_2 ? 12'h0F0 : on_mhp_bg_2 ? 12'h800 :
                                  on_bar_2    ? 12'hF00 : 
                                  on_warn_2   ? 12'hF00 : 
                                  see_2       ? sprite_color : 
