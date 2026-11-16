@@ -39,14 +39,16 @@ module lab08_top (
     wire        back, mirror, moving, adv;
     wire        is_attacking;
 
-    // --- Boss and Combat ---
-    wire [9:0] boss_x, boss_y;
-    wire [1:0] boss_state;
-    wire [7:0] boss_hp, player_hp, player_max_hp;
+    // --- Boss and Combat (Expanded Bit-widths for 100k HP) ---
+    wire [9:0]  boss_x, boss_y;
+    wire [1:0]  boss_state;
+    wire [16:0] boss_hp;           // 17-bit for 100,000 HP
+    wire [8:0]  player_hp;         // 9-bit for 300 HP
+    wire [8:0]  player_max_hp;     
     
-    // --- Minions and Barrier ---
+    // --- Minions and Barrier (Expanded to 208 bits for 13-bit HP array) ---
     wire [159:0] flat_minion_x, flat_minion_y;
-    wire [95:0]  flat_minion_hp;
+    wire [207:0] flat_minion_hp;   // 16 * 13 bits
     wire [1:0]   minion_state;
     wire [3:0]   barrier_active;
 
@@ -77,8 +79,8 @@ module lab08_top (
                      .step(step), .state(walk_state));
 
     wire [4:0] base_frame = current_form * 5'd4;  
-    wire [4:0] walk_sprite_frame = base_frame + (back ? 5'd3 : 5'd0) + {3'd0, step};
-    wire [4:0] sprite_frame = is_attacking ? (base_frame + 5'd3) : walk_sprite_frame; // Frame 3 is attack
+    wire [4:0] walk_sprite_frame = base_frame + {3'd0, step};
+    wire [4:0] sprite_frame = is_attacking ? (base_frame + 5'd3) : walk_sprite_frame;
     assign LED = walk_state;
 
     // ---------------- Picture Render ----------------
