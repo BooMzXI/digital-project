@@ -28,3 +28,25 @@ module rom_lut #(
     initial $readmemh(FILE, mem);
     always @(posedge clk) q <= mem[addr];
 endmodule
+
+// ==========================================
+// NEW: Dual-Port ROM for sharing BRAM
+// ==========================================
+// dual-port ROM, 1 clock read latency, Block RAM
+module rom_2p #(
+    parameter DW = 8, AW = 16, DEPTH = 1 << AW,
+    parameter FILE = ""
+) (
+    input  wire          clk,
+    input  wire [AW-1:0] addr_a,
+    output reg  [DW-1:0] q_a,
+    input  wire [AW-1:0] addr_b,
+    output reg  [DW-1:0] q_b
+);
+    (* rom_style = "block" *) reg [DW-1:0] mem [0:DEPTH-1];
+    initial $readmemh(FILE, mem);
+    always @(posedge clk) begin
+        q_a <= mem[addr_a];
+        q_b <= mem[addr_b];
+    end
+endmodule
