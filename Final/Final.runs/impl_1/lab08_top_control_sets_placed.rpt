@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.2 (win64) Build 5239630 Fri Nov 08 22:35:27 MST 2024
-| Date         : Tue Nov 10 15:53:23 2026
+| Date         : Tue Nov 17 16:25:59 2026
 | Host         : Phuree running 64-bit major release  (build 9200)
 | Command      : report_control_sets -verbose -file lab08_top_control_sets_placed.rpt
 | Design       : lab08_top
@@ -23,11 +23,11 @@ Table of Contents
 +----------------------------------------------------------+-------+
 |                          Status                          | Count |
 +----------------------------------------------------------+-------+
-| Total control sets                                       |    11 |
-|    Minimum number of control sets                        |    11 |
+| Total control sets                                       |    62 |
+|    Minimum number of control sets                        |    62 |
 |    Addition due to synthesis replication                 |     0 |
 |    Addition due to physical synthesis replication        |     0 |
-| Unused register locations in slices containing registers |    51 |
+| Unused register locations in slices containing registers |   216 |
 +----------------------------------------------------------+-------+
 * Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
 ** Run report_qor_suggestions for automated merging and remapping suggestions
@@ -39,15 +39,15 @@ Table of Contents
 +--------------------+-------+
 |       Fanout       | Count |
 +--------------------+-------+
-| Total control sets |    11 |
-| >= 0 to < 4        |     2 |
-| >= 4 to < 6        |     0 |
-| >= 6 to < 8        |     2 |
-| >= 8 to < 10       |     1 |
-| >= 10 to < 12      |     2 |
-| >= 12 to < 14      |     2 |
+| Total control sets |    62 |
+| >= 0 to < 4        |     0 |
+| >= 4 to < 6        |    26 |
+| >= 6 to < 8        |    13 |
+| >= 8 to < 10       |     5 |
+| >= 10 to < 12      |    14 |
+| >= 12 to < 14      |     1 |
 | >= 14 to < 16      |     0 |
-| >= 16              |     2 |
+| >= 16              |     3 |
 +--------------------+-------+
 * Control sets can be remapped at either synth_design or opt_design
 
@@ -58,32 +58,83 @@ Table of Contents
 +--------------+-----------------------+------------------------+-----------------+--------------+
 | Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
 +--------------+-----------------------+------------------------+-----------------+--------------+
-| No           | No                    | No                     |              39 |           23 |
-| No           | No                    | Yes                    |               0 |            0 |
-| No           | Yes                   | No                     |              41 |           18 |
-| Yes          | No                    | No                     |               1 |            1 |
-| Yes          | No                    | Yes                    |               2 |            1 |
-| Yes          | Yes                   | No                     |              42 |           15 |
+| No           | No                    | No                     |             139 |           91 |
+| No           | No                    | Yes                    |              68 |           26 |
+| No           | Yes                   | No                     |              59 |           31 |
+| Yes          | No                    | No                     |             103 |           77 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |             359 |          143 |
 +--------------+-----------------------+------------------------+-----------------+--------------+
 
 
 4. Detailed Control Set Information
 -----------------------------------
 
-+--------------+------------------------+---------------------------+------------------+----------------+--------------+
-| Clock Signal |      Enable Signal     |      Set/Reset Signal     | Slice Load Count | Bel Load Count | Bels / Slice |
-+--------------+------------------------+---------------------------+------------------+----------------+--------------+
-|  u_clk/clk25 | u_sync/rst_reg         |                           |                1 |              1 |         1.00 |
-|  u_clk/clk25 | u_player/adv           | rst                       |                1 |              2 |         2.00 |
-|  u_clk/clk25 | u_sync/rst_reg         | u_player/cam_x0_in[5]     |                2 |              6 |         3.00 |
-|  u_clk/clk25 | u_sync/rst_reg         | u_player/cam_y[8]_i_1_n_0 |                2 |              7 |         3.50 |
-|  u_clk/clk25 | u_player/py[9]_i_1_n_0 | rst                       |                3 |              9 |         3.00 |
-|  u_clk/clk25 | u_sync/y[9]_i_2_n_0    | u_sync/y[9]_i_1_n_0       |                4 |             10 |         2.50 |
-|  u_clk/clk25 | u_player/mirror0_out   | rst                       |                4 |             10 |         2.50 |
-|  u_clk/clk25 |                        | u_render/u_sprite/out[6]  |                4 |             12 |         3.00 |
-|  u_clk/clk25 |                        | u_render/VGA_R[3]_i_1_n_0 |                2 |             12 |         6.00 |
-|  u_clk/clk25 |                        | u_sync/x[9]_i_1_n_0       |               12 |             17 |         1.42 |
-|  u_clk/clk25 |                        |                           |               23 |             41 |         1.78 |
-+--------------+------------------------+---------------------------+------------------+----------------+--------------+
++--------------+----------------------------------+-------------------------------+------------------+----------------+--------------+
+| Clock Signal |           Enable Signal          |        Set/Reset Signal       | Slice Load Count | Bel Load Count | Bels / Slice |
++--------------+----------------------------------+-------------------------------+------------------+----------------+--------------+
+|  u_clk/clk25 | u_player/m_dt[11][5]_i_1_n_0     | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_sync/rst_reg                   |                               |                3 |              4 |         1.33 |
+|  u_clk/clk25 | u_player/m_dt[0][5]_i_1_n_0      | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/m_dt[5][5]_i_1_n_0      | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/m_dt[7][5]_i_1_n_0      | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/m_dt[8][5]_i_1_n_0      | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/m_dt[9][5]_i_1_n_0      | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/m_dt[6][5]_i_1_n_0      | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/m_dt[4][5]_i_1_n_0      | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/m_dt[15][5]_i_1_n_0     | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/m_dt[1][5]_i_1_n_0      | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/m_dt[13][5]_i_1_n_0     | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/m_dt[3][5]_i_1_n_0      | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/sec_0_reg[3][0]         | rst                           |                1 |              4 |         4.00 |
+|  u_clk/clk25 | u_player/sec_1_reg[1][0]         | rst                           |                1 |              4 |         4.00 |
+|  u_clk/clk25 | u_player/m_dt[10][5]_i_1_n_0     | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/m_dt[2][5]_i_1_n_0      | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/m_dt[14][5]_i_1_n_0     | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/sec_00                  | rst                           |                1 |              4 |         4.00 |
+|  u_clk/clk25 | u_player/E[0]                    | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/m_dt[12][5]_i_1_n_0     | rst                           |                2 |              4 |         2.00 |
+|  u_clk/clk25 | u_player/boss_dt[5]_i_1_n_0      | rst                           |                1 |              4 |         4.00 |
+|  u_clk/clk25 | u_player/m_hp[14][12]_i_1_n_0    | rst                           |                2 |              5 |         2.50 |
+|  u_clk/clk25 | u_player/m_hp[13][12]_i_1_n_0    | rst                           |                2 |              5 |         2.50 |
+|  u_clk/clk25 | u_player/m_hp[12][12]_i_1_n_0    | rst                           |                2 |              5 |         2.50 |
+|  u_clk/clk25 | u_player/m_hp[15][12]_i_1_n_0    | rst                           |                2 |              5 |         2.50 |
+|  u_clk/clk25 | u_player/m_hp[11][8]_i_1_n_0     | rst                           |                1 |              6 |         6.00 |
+|  u_clk/clk25 | u_player/m_hp[10][8]_i_1_n_0     | rst                           |                2 |              6 |         3.00 |
+|  u_clk/clk25 | u_player/boss_hp[16]_i_1_n_0     | rst                           |                2 |              6 |         3.00 |
+|  u_clk/clk25 | u_player/m_hp[8][8]_i_1_n_0      | rst                           |                1 |              6 |         6.00 |
+|  u_clk/clk25 | u_player/m_hp[9][8]_i_1_n_0      | rst                           |                2 |              6 |         3.00 |
+|  u_clk/clk25 | u_player/minion_timer[6]_i_1_n_0 | rst                           |                3 |              7 |         2.33 |
+|  u_clk/clk25 | u_player/m_hp[10][12]_i_2_n_0    | u_sync/rst_reg_10[0]          |                3 |              7 |         2.33 |
+|  u_clk/clk25 | u_player/m_hp[11][12]_i_2_n_0    | u_sync/rst_reg_12[0]          |                3 |              7 |         2.33 |
+|  u_clk/clk25 | u_sync/rst_reg_0                 | u_player/cam_x0_in[8]         |                3 |              7 |         2.33 |
+|  u_clk/clk25 | u_player/m_hp[8][12]_i_2_n_0     | u_sync/rst_reg_9[0]           |                3 |              7 |         2.33 |
+|  u_clk/clk25 | u_player/player_hp[8]_i_1_n_0    |                               |                6 |              7 |         1.17 |
+|  u_clk/clk25 | u_player/m_hp[9][12]_i_2_n_0     | u_sync/rst_reg_11[0]          |                3 |              7 |         2.33 |
+|  u_clk/clk25 | u_player/boss_timer[6]_i_1_n_0   | rst                           |                2 |              7 |         3.50 |
+|  u_clk/clk25 | u_sync/rst_reg_0                 | u_player/cam_y[8]_i_1_n_0     |                4 |              8 |         2.00 |
+|  u_clk/clk25 | u_player/m_hp[12][11]_i_2_n_0    | u_sync/rst_reg_13[0]          |                3 |              8 |         2.67 |
+|  u_clk/clk25 | u_player/m_hp[13][11]_i_2_n_0    | u_player/m_hp[13][11]_i_1_n_0 |                3 |              8 |         2.67 |
+|  u_clk/clk25 | u_player/m_hp[15][11]_i_2_n_0    | u_player/m_hp[15][11]_i_1_n_0 |                3 |              8 |         2.67 |
+|  u_clk/clk25 | u_player/m_hp[14][11]_i_2_n_0    | u_sync/rst_reg_14[0]          |                3 |              8 |         2.67 |
+|  u_clk/clk25 | u_sync/y_reg[3]_2[0]             | u_sync/rst_reg_7[0]           |                4 |             10 |         2.50 |
+|  u_clk/clk25 | u_sync/y_reg[3]_0[0]             | u_sync/rst_reg_8[0]           |                4 |             10 |         2.50 |
+|  u_clk/clk25 | u_sync/x_end                     | u_sync/y[9]_i_1_n_0           |                3 |             10 |         3.33 |
+|  u_clk/clk25 | u_sync/game_won_reg_3            | rst                           |                7 |             10 |         1.43 |
+|  u_clk/clk25 | u_player/py[9]_i_1_n_0           | rst                           |                3 |             10 |         3.33 |
+|  u_clk/clk25 |                                  | u_sync/x[9]_i_1_n_0           |                4 |             10 |         2.50 |
+|  u_clk/clk25 | u_sync/y_reg[3]_1[0]             | u_sync/SR[0]                  |                4 |             10 |         2.50 |
+|  u_clk/clk25 | u_sync/y_reg[3]_3[0]             | u_sync/rst_reg_6[0]           |                4 |             10 |         2.50 |
+|  u_clk/clk25 | u_sync/y_reg[3]_7[0]             | u_sync/rst_reg_2[0]           |                4 |             11 |         2.75 |
+|  u_clk/clk25 | u_sync/y_reg[3]_4[0]             | u_sync/rst_reg_5[0]           |                4 |             11 |         2.75 |
+|  u_clk/clk25 | u_player/boss_hp[14]_i_2_n_0     | u_sync/rst_reg_15[0]          |                4 |             11 |         2.75 |
+|  u_clk/clk25 | u_player/px[9]_i_1_n_0           | rst                           |                4 |             11 |         2.75 |
+|  u_clk/clk25 | u_sync/y_reg[3]_6[0]             | u_sync/rst_reg_3[0]           |                4 |             11 |         2.75 |
+|  u_clk/clk25 | u_sync/y_reg[3]_5[0]             | u_sync/rst_reg_4[0]           |                4 |             11 |         2.75 |
+|  u_clk/clk25 |                                  | u_render/VGA_B[3]_i_1_n_0     |                4 |             12 |         3.00 |
+|  u_clk/clk25 | rst                              |                               |               68 |             92 |         1.35 |
+|  u_clk/clk25 |                                  | rst                           |               49 |            105 |         2.14 |
+|  u_clk/clk25 |                                  |                               |               91 |            141 |         1.55 |
++--------------+----------------------------------+-------------------------------+------------------+----------------+--------------+
 
 

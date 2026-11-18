@@ -25,7 +25,7 @@ else
 fi
 export LD_LIBRARY_PATH
 
-HD_PWD='C:/Users/phure/Downloads/LAB08_VGA_Walk/vivado/LAB08_VGA_Walk.runs/impl_1'
+HD_PWD='C:/Users/phure/Documents/GitHub/digital-project/Final/Final.runs/impl_1'
 cd "$HD_PWD"
 
 HD_LOG=runme.log

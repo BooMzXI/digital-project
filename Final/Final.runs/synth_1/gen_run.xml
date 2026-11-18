@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="synth_1" LaunchPart="xc7a100tcsg324-1" LaunchTime="1794300684">
+<GenRun Id="synth_1" LaunchPart="xc7a100tcsg324-1" LaunchTime="1794907170" LaunchIncrCheckpoint="$PSRCDIR/utils_1/imports/synth_1/lab08_top.dcp">
+  <File Type="PA-TCL" Name="lab08_top.tcl"/>
   <File Type="REPORTS-TCL" Name="lab08_top_reports.tcl"/>
+  <File Type="RDS-RDS" Name="lab08_top.vds"/>
+  <File Type="RDS-PROPCONSTRS" Name="lab08_top_drc_synth.rpt"/>
   <File Type="RDS-UTIL" Name="lab08_top_utilization_synth.rpt"/>
   <File Type="RDS-UTIL-PB" Name="lab08_top_utilization_synth.pb"/>
-  <File Type="PA-TCL" Name="lab08_top.tcl"/>
-  <File Type="RDS-RDS" Name="lab08_top.vds"/>
   <File Type="RDS-DCP" Name="lab08_top.dcp"/>
+  <File Type="VDS-TIMINGSUMMARY" Name="lab08_top_timing_summary_synth.rpt"/>
+  <File Type="VDS-TIMING-PB" Name="lab08_top_timing_summary_synth.pb"/>
   <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
     <Filter Type="Srcs"/>
     <File Path="$PSRCDIR/sources_1/imports/LAB08_VGA_Walk/rtl/clk_gen.v">
@@ -21,6 +24,15 @@
       <FileInfo>
         <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/LAB08_VGA_Walk/rtl/lab08.v"/>
         <Attr Name="ImportTime" Val="1793977042"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/imports/Lab06/mod10_jk.v">
+      <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/Lab06/mod10_jk.v"/>
+        <Attr Name="ImportTime" Val="1794491929"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -115,6 +127,14 @@
   </FileSet>
   <FileSet Name="utils" Type="Utils" RelSrcDir="$PSRCDIR/utils_1" RelGenDir="$PGENDIR/utils_1">
     <Filter Type="Utils"/>
+    <File Path="$PSRCDIR/utils_1/imports/synth_1/lab08_top.dcp">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedInSteps" Val="synth_1"/>
+        <Attr Name="AutoDcp" Val="1"/>
+      </FileInfo>
+    </File>
     <Config>
       <Option Name="TopAutoSet" Val="TRUE"/>
     </Config>

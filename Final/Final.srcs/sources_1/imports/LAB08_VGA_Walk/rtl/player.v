@@ -3,7 +3,8 @@ module player (
     input  wire       clk, rst, tick,              
     input  wire [3:0] btn,               
     input  wire       btn_attack, sw0,               
-    output reg  [9:0] px = 10'd250, py = 10'd260, 
+    // [อัปเดต] ย้ายจุดเกิดผู้เล่นไปตรงกลางล่างของแมพ 800x512
+    output reg  [9:0] px = 10'd400, py = 10'd450, 
     output reg  [8:0] cam_x = 0,
     output reg  [9:0] cam_y = 0,
     output reg        back = 0, mirror = 0,        
@@ -14,13 +15,14 @@ module player (
     output wire [39:0] flat_item_x, flat_item_y,
     
     output reg        is_attacking = 0,
-    output reg  [8:0] player_hp = 9'd100, player_max_hp = 9'd100, // 9-bit up to 300 HP
-    output reg  [9:0] boss_x = 10'd250, boss_y = 10'd200, 
+    output reg  [8:0] player_hp = 9'd100, player_max_hp = 9'd100, 
+    // [อัปเดต] ย้ายบอสไปตรงกลางของแมพ
+    output reg  [9:0] boss_x = 10'd400, boss_y = 10'd256, 
     output reg  [1:0] boss_state = 0,   
-    output reg  [16:0] boss_hp = 17'd100000, // 17-bit for 100,000 HP
+    output reg  [16:0] boss_hp = 17'd100000, 
     
     output wire [159:0] flat_minion_x, flat_minion_y,
-    output wire [207:0] flat_minion_hp,      // 16 * 13-bit for 5,000 HP
+    output wire [207:0] flat_minion_hp,      
     output reg  [1:0]   minion_state = 0,
     output wire [3:0]   barrier_active,
     
@@ -37,7 +39,7 @@ module player (
     assign adv    = tick && (!moving || frames == 3'd7);
 
     reg [9:0]  item_x [0:3], item_y [0:3], m_x [0:15], m_y [0:15];
-    reg [12:0] m_hp [0:15]; // 13-bit array for minion HP
+    reg [12:0] m_hp [0:15]; 
     
     reg [5:0] m_dt [0:15];
     reg [5:0] boss_dt = 0;
@@ -51,7 +53,7 @@ module player (
         for (g=0; g<16; g=g+1) begin : pack_m
             assign flat_minion_x[g*10 +: 10] = m_x[g];
             assign flat_minion_y[g*10 +: 10] = m_y[g];
-            assign flat_minion_hp[g*13 +: 13]  = m_hp[g]; // Pack 13 bits
+            assign flat_minion_hp[g*13 +: 13]  = m_hp[g]; 
             assign flat_minion_dying[g]      = (m_dt[g] > 0);
         end
     endgenerate
@@ -67,7 +69,6 @@ module player (
     wire [9:0] dy_b = (py > boss_y) ? (py - boss_y) : (boss_y - py);
     integer dx_m, dy_m, dmg_hit, i;
     
-    // --- Scale Player Damage (1, 10, 100, 1000, 10000) ---
     wire [13:0] p_dmg = (current_form == 3'd0) ? 14'd1 :
                         (current_form == 3'd1) ? 14'd10 :
                         (current_form == 3'd2) ? 14'd100 :
@@ -78,16 +79,19 @@ module player (
     reg [1:0] rand_shift = 0;
     always @(posedge clk) rand_shift <= rand_shift + 1'b1;
 
-    wire [9:0] ix0 = (rand_shift==0)?10'd100 : (rand_shift==1)?10'd400 : (rand_shift==2)?10'd100 : 10'd400;
-    wire [9:0] iy0 = (rand_shift==0)?10'd100 : (rand_shift==1)?10'd100 : (rand_shift==2)?10'd400 : 10'd400;
-    wire [9:0] ix1 = (rand_shift==0)?10'd400 : (rand_shift==1)?10'd100 : (rand_shift==2)?10'd400 : 10'd100;
-    wire [9:0] iy1 = (rand_shift==0)?10'd100 : (rand_shift==1)?10'd400 : (rand_shift==2)?10'd400 : 10'd100;
-    wire [9:0] ix2 = (rand_shift==0)?10'd100 : (rand_shift==1)?10'd400 : (rand_shift==2)?10'd400 : 10'd100;
-    wire [9:0] iy2 = (rand_shift==0)?10'd400 : (rand_shift==1)?10'd400 : (rand_shift==2)?10'd100 : 10'd100;
-    wire [9:0] ix3 = (rand_shift==0)?10'd400 : (rand_shift==1)?10'd100 : (rand_shift==2)?10'd100 : 10'd400;
-    wire [9:0] iy3 = (rand_shift==0)?10'd400 : (rand_shift==1)?10'd100 : (rand_shift==2)?10'd100 : 10'd400;
+    // [อัปเดต] จัดระเบียบการสุ่ม 4 มุมให้ปลอดภัย (X:150,650) และ (Y:120,392) เพื่อไม่ให้ลูกน้องกระเด็นติดขอบจอ
+    wire [9:0] ix0 = (rand_shift==0)?10'd150 : (rand_shift==1)?10'd650 : (rand_shift==2)?10'd650 : 10'd150;
+    wire [9:0] iy0 = (rand_shift==0)?10'd120 : (rand_shift==1)?10'd120 : (rand_shift==2)?10'd392 : 10'd392;
 
-    // --- Barrier Collision ---
+    wire [9:0] ix1 = (rand_shift==0)?10'd650 : (rand_shift==1)?10'd650 : (rand_shift==2)?10'd150 : 10'd150;
+    wire [9:0] iy1 = (rand_shift==0)?10'd120 : (rand_shift==1)?10'd392 : (rand_shift==2)?10'd392 : 10'd120;
+
+    wire [9:0] ix2 = (rand_shift==0)?10'd650 : (rand_shift==1)?10'd150 : (rand_shift==2)?10'd150 : 10'd650;
+    wire [9:0] iy2 = (rand_shift==0)?10'd392 : (rand_shift==1)?10'd392 : (rand_shift==2)?10'd120 : 10'd120;
+
+    wire [9:0] ix3 = (rand_shift==0)?10'd150 : (rand_shift==1)?10'd150 : (rand_shift==2)?10'd650 : 10'd650;
+    wire [9:0] iy3 = (rand_shift==0)?10'd392 : (rand_shift==1)?10'd120 : (rand_shift==2)?10'd120 : 10'd392;
+
     wire [9:0] nx_l = px - step_size, nx_r = px + step_size, ny_u = py - step_size, ny_d = py + step_size;
     reg hit_l, hit_r, hit_u, hit_d;
     integer c_i;
@@ -95,10 +99,10 @@ module player (
         hit_l = 0; hit_r = 0; hit_u = 0; hit_d = 0;
         for (c_i = 0; c_i < 4; c_i = c_i + 1) begin
             if (barrier_active[c_i]) begin
-                if (nx_l >= item_x[c_i] - 45 && nx_l <= item_x[c_i] + 45 && py >= item_y[c_i] - 45 && py <= item_y[c_i] + 45) hit_l = 1;
-                if (nx_r >= item_x[c_i] - 45 && nx_r <= item_x[c_i] + 45 && py >= item_y[c_i] - 45 && py <= item_y[c_i] + 45) hit_r = 1;
-                if (px >= item_x[c_i] - 45 && px <= item_x[c_i] + 45 && ny_u >= item_y[c_i] - 45 && ny_u <= item_y[c_i] + 45) hit_u = 1;
-                if (px >= item_x[c_i] - 45 && px <= item_x[c_i] + 45 && ny_d >= item_y[c_i] - 45 && ny_d <= item_y[c_i] + 45) hit_d = 1;
+                if (nx_l >= item_x[c_i] - 60 && nx_l <= item_x[c_i] + 60 && py >= item_y[c_i] - 60 && py <= item_y[c_i] + 60) hit_l = 1;
+                if (nx_r >= item_x[c_i] - 60 && nx_r <= item_x[c_i] + 60 && py >= item_y[c_i] - 60 && py <= item_y[c_i] + 60) hit_r = 1;
+                if (px >= item_x[c_i] - 60 && px <= item_x[c_i] + 60 && ny_u >= item_y[c_i] - 60 && ny_u <= item_y[c_i] + 60) hit_u = 1;
+                if (px >= item_x[c_i] - 60 && px <= item_x[c_i] + 60 && ny_d >= item_y[c_i] - 60 && ny_d <= item_y[c_i] + 60) hit_d = 1;
             end
         end
     end
@@ -110,7 +114,7 @@ module player (
     always @(posedge clk) begin
         btn_s <= btn; b <= btn_s;
         if (rst) begin
-            px <= 10'd250; py <= 10'd260; // Spawn near boss
+            px <= 10'd400; py <= 10'd450; 
             back <= 1'b0; mirror <= 1'b0; frames <= 3'd0;
             item_active <= 4'b1111; current_form <= 3'd0;
             
@@ -119,36 +123,34 @@ module player (
             item_x[2] <= ix2; item_y[2] <= iy2;
             item_x[3] <= ix3; item_y[3] <= iy3;
             
-            // --- Assign 5-hit Minion HP ---
             for (i=0; i<16; i=i+1) begin 
-                if (i < 4) m_hp[i] <= 13'd5;        // Form 0: 5 hits * 1
-                else if (i < 8) m_hp[i] <= 13'd50;  // Form 1: 5 hits * 10
-                else if (i < 12) m_hp[i] <= 13'd500; // Form 2: 5 hits * 100
-                else m_hp[i] <= 13'd5000;           // Form 3: 5 hits * 1000
+                if (i < 4) m_hp[i] <= 13'd5;        
+                else if (i < 8) m_hp[i] <= 13'd50;  
+                else if (i < 12) m_hp[i] <= 13'd500; 
+                else m_hp[i] <= 13'd5000;           
                 m_dt[i] <= 0; 
             end
             
-            m_x[0] <= ix0;      m_y[0] <= iy0 - 45; 
-            m_x[1] <= ix0 + 45; m_y[1] <= iy0;
-            m_x[2] <= ix0;      m_y[2] <= iy0 + 45;
-            m_x[3] <= ix0 - 45; m_y[3] <= iy0;
+            m_x[0] <= ix0;      m_y[0] <= iy0 - 75; 
+            m_x[1] <= ix0 + 75; m_y[1] <= iy0;
+            m_x[2] <= ix0;      m_y[2] <= iy0 + 75;
+            m_x[3] <= ix0 - 75; m_y[3] <= iy0;
             
-            m_x[4] <= ix1;      m_y[4] <= iy1 - 45; 
-            m_x[5] <= ix1 + 45; m_y[5] <= iy1;
-            m_x[6] <= ix1;      m_y[6] <= iy1 + 45;
-            m_x[7] <= ix1 - 45; m_y[7] <= iy1;
+            m_x[4] <= ix1;      m_y[4] <= iy1 - 75; 
+            m_x[5] <= ix1 + 75; m_y[5] <= iy1;
+            m_x[6] <= ix1;      m_y[6] <= iy1 + 75;
+            m_x[7] <= ix1 - 75; m_y[7] <= iy1;
             
-            m_x[8] <= ix2;      m_y[8] <= iy2 - 45; 
-            m_x[9] <= ix2 + 45; m_y[9] <= iy2;
-            m_x[10]<= ix2;      m_y[10]<= iy2 + 45;
-            m_x[11]<= ix2 - 45; m_y[11]<= iy2;
+            m_x[8] <= ix2;      m_y[8] <= iy2 - 75; 
+            m_x[9] <= ix2 + 75; m_y[9] <= iy2;
+            m_x[10]<= ix2;      m_y[10]<= iy2 + 75;
+            m_x[11]<= ix2 - 75; m_y[11]<= iy2;
             
-            m_x[12]<= ix3;      m_y[12]<= iy3 - 45; 
-            m_x[13]<= ix3 + 45; m_y[13]<= iy3;
-            m_x[14]<= ix3;      m_y[14]<= iy3 + 45;
-            m_x[15]<= ix3 - 45; m_y[15]<= iy3;
+            m_x[12]<= ix3;      m_y[12]<= iy3 - 75; 
+            m_x[13]<= ix3 + 75; m_y[13]<= iy3;
+            m_x[14]<= ix3;      m_y[14]<= iy3 + 75;
+            m_x[15]<= ix3 - 75; m_y[15]<= iy3;
 
-            // --- Reset HP logic ---
             player_max_hp <= 9'd100; player_hp <= 9'd100; game_won <= 1'b0;
             boss_hp <= 17'd100000; boss_state <= 2'd0; boss_timer <= 8'd0; boss_dt <= 0;
             is_attacking <= 1'b0; attack_timer <= 5'd0;
@@ -164,21 +166,22 @@ module player (
 
             if (!game_won) begin
                 if (player_hp > 0) begin 
+                    // [อัปเดต] ขอบเขตการเดินสำหรับแมพขนาด 800 x 512
                     if (left  && px > 32  && !hit_b_l) begin px <= px - step_size; mirror <= 1'b0; end
-                    if (right && px < 480 && !hit_b_r) begin px <= px + step_size; mirror <= 1'b1; end
+                    if (right && px < 768 && !hit_b_r) begin px <= px + step_size; mirror <= 1'b1; end // ขวาสุด 800
                     if (up    && py > 64  && !hit_b_u) begin py <= py - step_size; back   <= 1'b1; end
-                    if (down  && py < 760 && !hit_b_d) begin py <= py + step_size; back   <= 1'b0; end
+                    if (down  && py < 480 && !hit_b_d) begin py <= py + step_size; back   <= 1'b0; end // ล่างสุด 512
                     frames <= moving ? frames + 1'b1 : 3'd0;
                 end
                 
-                cam_x <= (px < 160) ? 9'd0  : (px > 352) ? 9'd192  : px - 10'd160;
-                cam_y <= (py < 120) ? 10'd0 : (py > 648) ? 10'd528 : py - 10'd120;
+                // [อัปเดต] ขอบเขตกล้องสำหรับแมพขนาด 800 x 512 (กล้องกว้าง 320, สูง 240)
+                cam_x <= (px < 160) ? 9'd0  : (px > 640) ? 9'd480  : px - 10'd160; 
+                cam_y <= (py < 120) ? 10'd0 : (py > 392) ? 10'd272 : py - 10'd120;
 
                 if (is_attacking) begin 
                     attack_timer <= attack_timer + 1'b1;
                     if (attack_timer == 5'd1) begin
                         if (boss_hp > 0 && dx_b <= 10'd60 && dy_b <= 10'd60) begin 
-                            // Deal damage to Boss
                             if (boss_hp > p_dmg) boss_hp <= boss_hp - p_dmg; 
                             else begin boss_hp <= 0; boss_dt <= 6'd60; end 
                         end
@@ -187,7 +190,6 @@ module player (
                                 dx_m = (px > m_x[i]) ? (px - m_x[i]) : (m_x[i] - px);
                                 dy_m = (py > m_y[i]) ? (py - m_y[i]) : (m_y[i] - py);
                                 if (dx_m <= 48 && dy_m <= 48) begin
-                                    // Deal damage to Minions
                                     if (m_hp[i] > p_dmg) m_hp[i] <= m_hp[i] - p_dmg; 
                                     else begin m_hp[i] <= 0; m_dt[i] <= 6'd60; end 
                                 end
@@ -211,7 +213,6 @@ module player (
                         end
                         2'd2: begin
                             boss_timer <= boss_timer + 1'b1;
-                            // --- Boss Deals 50 Damage ---
                             if (boss_timer == 8'd1 && dx_b <= 10'd60 && dy_b <= 10'd60 && player_hp > 0) begin
                                 if (player_hp > 9'd50) player_hp <= player_hp - 9'd50; else player_hp <= 9'd0;
                             end
@@ -240,7 +241,6 @@ module player (
                                     if (dx_m <= 40 && dy_m <= 40) dmg_hit = 1;
                                 end
                             end
-                            // --- Minions Deal 20 Damage ---
                             if (dmg_hit) begin if (player_hp > 9'd20) player_hp <= player_hp - 9'd20; else player_hp <= 9'd0; end
                         end
                         if (minion_timer >= 8'd15) begin minion_state <= 2'd0; minion_timer <= 8'd0; end
@@ -249,12 +249,11 @@ module player (
 
                 if (current_form < 4 && !barrier_active[current_form]) begin
                     if (item_active[current_form] && 
-                        (px + 10 > target_x) && (px - 10 < target_x) && 
-                        (py + 10 > target_y) && (py - 10 < target_y)) begin
+                        (px + 25 > target_x) && (px - 25 < target_x) && 
+                        (py + 25 > target_y) && (py - 25 < target_y)) begin
                         item_active[current_form] <= 1'b0;          
                         current_form <= current_form + 1'b1; 
                         
-                        // --- Expand and Restore Player HP on Upgrade ---
                         if (current_form == 0) begin player_max_hp <= 9'd150; player_hp <= 9'd150; end
                         else if (current_form == 1) begin player_max_hp <= 9'd200; player_hp <= 9'd200; end
                         else if (current_form == 2) begin player_max_hp <= 9'd250; player_hp <= 9'd250; end

@@ -1,5 +1,5 @@
 namespace eval ::optrace {
-  variable script "C:/Users/phure/Downloads/LAB08_VGA_Walk/vivado/LAB08_VGA_Walk.runs/impl_1/lab08_top.tcl"
+  variable script "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.runs/impl_1/lab08_top.tcl"
   variable category "vivado_impl"
 }
 
@@ -109,7 +109,7 @@ set rc [catch {
   set_param xicom.use_bs_reader 1
   set_param runs.launchOptions { -jobs 8  }
   open_checkpoint lab08_top_routed.dcp
-  set_property webtalk.parent_dir C:/Users/phure/Downloads/LAB08_VGA_Walk/vivado/LAB08_VGA_Walk.cache/wt [current_project]
+  set_property webtalk.parent_dir C:/Users/phure/Documents/GitHub/digital-project/Final/Final.cache/wt [current_project]
 set_property TOP lab08_top [current_fileset]
 OPTRACE "read constraints: write_bitstream" START { }
 OPTRACE "read constraints: write_bitstream" END { }
