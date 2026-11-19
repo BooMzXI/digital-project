@@ -3,7 +3,6 @@ module player (
     input  wire       clk, rst, tick,              
     input  wire [3:0] btn,               
     input  wire       btn_attack, sw0,               
-    // [อัปเดต] ย้ายจุดเกิดผู้เล่นไปตรงกลางล่างของแมพ 800x512
     output reg  [9:0] px = 10'd400, py = 10'd450, 
     output reg  [8:0] cam_x = 0,
     output reg  [9:0] cam_y = 0,
@@ -16,7 +15,6 @@ module player (
     
     output reg        is_attacking = 0,
     output reg  [8:0] player_hp = 9'd100, player_max_hp = 9'd100, 
-    // [อัปเดต] ย้ายบอสไปตรงกลางของแมพ
     output reg  [9:0] boss_x = 10'd400, boss_y = 10'd256, 
     output reg  [1:0] boss_state = 0,   
     output reg  [16:0] boss_hp = 17'd100000, 
@@ -43,6 +41,7 @@ module player (
     
     reg [5:0] m_dt [0:15];
     reg [5:0] boss_dt = 0;
+    reg       m_move_tick = 0; // Speed divider for minion patrol
     
     assign flat_item_x = {item_x[3], item_x[2], item_x[1], item_x[0]}; 
     assign flat_item_y = {item_y[3], item_y[2], item_y[1], item_y[0]};
@@ -67,7 +66,7 @@ module player (
     wire [9:0] target_y = item_y[current_form];
     wire [9:0] dx_b = (px > boss_x) ? (px - boss_x) : (boss_x - px);
     wire [9:0] dy_b = (py > boss_y) ? (py - boss_y) : (boss_y - py);
-    integer dx_m, dy_m, dmg_hit, i;
+    integer dx_m, dy_m, dmg_hit, minion_near, i;
     
     wire [13:0] p_dmg = (current_form == 3'd0) ? 14'd1 :
                         (current_form == 3'd1) ? 14'd10 :
@@ -79,7 +78,6 @@ module player (
     reg [1:0] rand_shift = 0;
     always @(posedge clk) rand_shift <= rand_shift + 1'b1;
 
-    // [อัปเดต] จัดระเบียบการสุ่ม 4 มุมให้ปลอดภัย (X:150,650) และ (Y:120,392) เพื่อไม่ให้ลูกน้องกระเด็นติดขอบจอ
     wire [9:0] ix0 = (rand_shift==0)?10'd150 : (rand_shift==1)?10'd650 : (rand_shift==2)?10'd650 : 10'd150;
     wire [9:0] iy0 = (rand_shift==0)?10'd120 : (rand_shift==1)?10'd120 : (rand_shift==2)?10'd392 : 10'd392;
 
@@ -154,7 +152,7 @@ module player (
             player_max_hp <= 9'd100; player_hp <= 9'd100; game_won <= 1'b0;
             boss_hp <= 17'd100000; boss_state <= 2'd0; boss_timer <= 8'd0; boss_dt <= 0;
             is_attacking <= 1'b0; attack_timer <= 5'd0;
-            minion_state <= 2'd0; minion_timer <= 8'd0;
+            minion_state <= 2'd0; minion_timer <= 8'd0; m_move_tick <= 1'b0;
             
         end else if (tick) begin
             
@@ -166,18 +164,34 @@ module player (
 
             if (!game_won) begin
                 if (player_hp > 0) begin 
-                    // [อัปเดต] ขอบเขตการเดินสำหรับแมพขนาด 800 x 512
                     if (left  && px > 32  && !hit_b_l) begin px <= px - step_size; mirror <= 1'b0; end
-                    if (right && px < 768 && !hit_b_r) begin px <= px + step_size; mirror <= 1'b1; end // ขวาสุด 800
+                    if (right && px < 768 && !hit_b_r) begin px <= px + step_size; mirror <= 1'b1; end 
                     if (up    && py > 64  && !hit_b_u) begin py <= py - step_size; back   <= 1'b1; end
-                    if (down  && py < 480 && !hit_b_d) begin py <= py + step_size; back   <= 1'b0; end // ล่างสุด 512
+                    if (down  && py < 480 && !hit_b_d) begin py <= py + step_size; back   <= 1'b0; end 
                     frames <= moving ? frames + 1'b1 : 3'd0;
                 end
                 
-                // [อัปเดต] ขอบเขตกล้องสำหรับแมพขนาด 800 x 512 (กล้องกว้าง 320, สูง 240)
                 cam_x <= (px < 160) ? 9'd0  : (px > 640) ? 9'd480  : px - 10'd160; 
                 cam_y <= (py < 120) ? 10'd0 : (py > 392) ? 10'd272 : py - 10'd120;
 
+                // --- Minion Patrol around Barrier (Clockwise, 30 px/sec) ---
+                m_move_tick <= ~m_move_tick;
+                if (m_move_tick && minion_state == 2'd0) begin
+                    for (i = 0; i < 16; i = i + 1) begin
+                        if (m_hp[i] > 0) begin
+                            if (m_y[i] == item_y[i >> 2] - 10'd75 && m_x[i] < item_x[i >> 2] + 10'd75)
+                                m_x[i] <= m_x[i] + 10'd1;
+                            else if (m_x[i] == item_x[i >> 2] + 10'd75 && m_y[i] < item_y[i >> 2] + 10'd75)
+                                m_y[i] <= m_y[i] + 10'd1;
+                            else if (m_y[i] == item_y[i >> 2] + 10'd75 && m_x[i] > item_x[i >> 2] - 10'd75)
+                                m_x[i] <= m_x[i] - 10'd1;
+                            else if (m_x[i] == item_x[i >> 2] - 10'd75 && m_y[i] > item_y[i >> 2] - 10'd75)
+                                m_y[i] <= m_y[i] - 10'd1;
+                        end
+                    end
+                end
+
+                // --- Player Attack (Slower cooldown: 20 frames) ---
                 if (is_attacking) begin 
                     attack_timer <= attack_timer + 1'b1;
                     if (attack_timer == 5'd1) begin
@@ -196,16 +210,21 @@ module player (
                             end
                         end
                     end
-                    if (attack_timer >= 5'd5) begin is_attacking <= 1'b0; attack_timer <= 5'd0; end
+                    if (attack_timer >= 5'd20) begin is_attacking <= 1'b0; attack_timer <= 5'd0; end
                 end else if (btn_attack && player_hp > 0) begin
                     is_attacking <= 1'b1; attack_timer <= 5'd0;
                 end
 
+                // --- Boss AI (Triggers only when player is near) ---
                 if (boss_hp > 0) begin
                     case (boss_state)
                         2'd0: begin
-                            boss_timer <= boss_timer + 1'b1;
-                            if (boss_timer >= 8'd100) begin boss_state <= 2'd1; boss_timer <= 8'd0; end
+                            if (boss_timer < 8'd30) begin
+                                boss_timer <= boss_timer + 1'b1;
+                            end else if (dx_b <= 10'd70 && dy_b <= 10'd70 && player_hp > 0) begin
+                                boss_state <= 2'd1;
+                                boss_timer <= 8'd0;
+                            end
                         end
                         2'd1: begin
                             boss_timer <= boss_timer + 1'b1;
@@ -221,10 +240,25 @@ module player (
                     endcase
                 end
 
+                // --- Minion AI (Triggers only when player is near any alive minion) ---
                 case (minion_state)
                     2'd0: begin
-                        minion_timer <= minion_timer + 1'b1;
-                        if (minion_timer >= 8'd100) begin minion_state <= 2'd1; minion_timer <= 8'd0; end
+                        if (minion_timer < 8'd30) begin
+                            minion_timer <= minion_timer + 1'b1;
+                        end else if (player_hp > 0) begin
+                            minion_near = 0;
+                            for (i = 0; i < 16; i = i + 1) begin
+                                if (m_hp[i] > 0) begin
+                                    dx_m = (px > m_x[i]) ? (px - m_x[i]) : (m_x[i] - px);
+                                    dy_m = (py > m_y[i]) ? (py - m_y[i]) : (m_y[i] - py);
+                                    if (dx_m <= 50 && dy_m <= 50) minion_near = 1;
+                                end
+                            end
+                            if (minion_near) begin
+                                minion_state <= 2'd1;
+                                minion_timer <= 8'd0;
+                            end
+                        end
                     end
                     2'd1: begin
                         minion_timer <= minion_timer + 1'b1;
