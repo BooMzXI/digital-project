@@ -47,12 +47,11 @@ module vga_render (
     wire [8:0] gx = x[9:1], gy = y[9:1];
     wire [9:0] wx = cam_x + gx, wy = cam_y + gy;
 
-    // [อัปเดต] รองรับ Map ขนาด กว้าง 800 x สูง 512 (ใช้สมการคูณพิกัดแทนการเรียงบิต)
+    // ใช้ Banked ROM สำหรับ Map ขนาด 800 x 512 (ประหยัด BRAM ไม่เกิน 270 บล็อก)
     wire [18:0] map_addr = (wy * 19'd800) + wx;
     wire [6:0] map_index; wire [11:0] map_color;
     
-    // DEPTH 409600 คือพื้นที่สำหรับ 800x512 ครับ ใช้ BRAM ปลอดภัยไม่เต็มแน่นอน
-    rom_1p #(.DW(7), .AW(19), .DEPTH(409600), .FILE("map.mem")) u_map (
+    rom_map_800x512 #(.DW(7), .FILE("map.mem")) u_map (
         .clk(clk), 
         .addr(map_addr), 
         .q(map_index)
@@ -119,7 +118,8 @@ module vga_render (
                          on_item      ? item_addr   : 17'd0;
     wire [7:0]  q_b;
     
-    rom_2p #(.DW(8), .AW(17), .DEPTH(110592), .FILE("sprite.mem")) u_master_sprite (
+    // DEPTH = 114688 (28 frames * 4096) เพื่อให้ครอบคลุมถึงเฟรม 27 (ฉากจบเกม)
+    rom_2p #(.DW(8), .AW(17), .DEPTH(114688), .FILE("sprite.mem")) u_master_sprite (
         .clk(clk),
         .addr_a(addr_a), .q_a(q_a),
         .addr_b(addr_b), .q_b(q_b)
