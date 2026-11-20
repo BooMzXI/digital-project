@@ -47,7 +47,7 @@ module vga_render (
     wire [8:0] gx = x[9:1], gy = y[9:1];
     wire [9:0] wx = cam_x + gx, wy = cam_y + gy;
 
-    // ใช้ Banked ROM สำหรับ Map ขนาด 800 x 512 (ประหยัด BRAM ไม่เกิน 270 บล็อก)
+    // Banked ROM สำหรับ Map ขนาด 800 x 512
     wire [18:0] map_addr = (wy * 19'd800) + wx;
     wire [6:0] map_index; wire [11:0] map_color;
     
@@ -92,8 +92,9 @@ module vga_render (
     wire [4:0] minion_frame = minion_is_dying ? 5'd26 : (5'd24 + {3'b000, minion_state});
     wire [16:0] minion_addr = minion_frame * 17'd4096 + {my_row, 6'd0} + {1'b0, mx_col};
 
+    // เลื่อนรูปฉากชนะ (Frame 27) ลงมาหน่อยจาก y=176 เป็น y=196 (128x128 px)
     wire signed [11:0] end_sx = $signed({2'b0, x}) - 12'sd256; 
-    wire signed [11:0] end_sy = $signed({2'b0, y}) - 12'sd176; 
+    wire signed [11:0] end_sy = $signed({2'b0, y}) - 12'sd196; 
     wire on_end_sprite = game_won && (end_sx >= 0 && end_sx < 128 && end_sy >= 0 && end_sy < 128);
     wire [5:0] esx = end_sx[6:1], esy = end_sy[6:1];
 
@@ -118,7 +119,6 @@ module vga_render (
                          on_item      ? item_addr   : 17'd0;
     wire [7:0]  q_b;
     
-    // DEPTH = 114688 (28 frames * 4096) เพื่อให้ครอบคลุมถึงเฟรม 27 (ฉากจบเกม)
     rom_2p #(.DW(8), .AW(17), .DEPTH(114688), .FILE("sprite.mem")) u_master_sprite (
         .clk(clk),
         .addr_a(addr_a), .q_a(q_a),
@@ -194,7 +194,98 @@ module vga_render (
             end
         end
     end
+
+    // =========================================================================
+    // ระบบแสดงข้อความพิกเซลสำหรับฉากจบ (YOU RECIVE / YOU DIE / PRESS RESET TO RESTART)
+    // =========================================================================
+    // 1) "YOU RECIVE" (10 ตัวอักษร, ขนาดตัวละ 32x32 px -> กว้าง 320 px, กึ่งกลางจอ x=160..479, y=110..141)
+    wire in_win_box = (x >= 10'd160 && x < 10'd480) && (y >= 10'd110 && y < 10'd142);
+    wire [9:0] win_dx = x - 10'd160;
+    wire [9:0] win_dy = y - 10'd110;
+    reg [7:0] win_char;
+    always @(*) begin
+        case (win_dx[8:5])
+            4'd0: win_char = "Y";
+            4'd1: win_char = "O";
+            4'd2: win_char = "U";
+            4'd3: win_char = " ";
+            4'd4: win_char = "R";
+            4'd5: win_char = "E";
+            4'd6: win_char = "C";
+            4'd7: win_char = "I";
+            4'd8: win_char = "V";
+            4'd9: win_char = "E";
+            default: win_char = " ";
+        endcase
+    end
+    wire win_px;
+    font_8x8 u_font_win (.char_code(win_char), .row(win_dy[4:2]), .col(win_dx[4:2]), .pixel_on(win_px));
+    wire on_win_text = in_win_box && win_px;
+
+    // 2) "YOU DIE" (7 ตัวอักษร, ขนาดตัวละ 64x64 px -> กว้าง 448 px, กึ่งกลางจอ x=96..543, y=180..243)
+    wire in_die_box = (x >= 10'd96 && x < 10'd544) && (y >= 10'd180 && y < 10'd244);
+    wire [9:0] die_dx = x - 10'd96;
+    wire [9:0] die_dy = y - 10'd180;
+    reg [7:0] die_char;
+    always @(*) begin
+        case (die_dx[8:6])
+            3'd0: die_char = "Y";
+            3'd1: die_char = "O";
+            3'd2: die_char = "U";
+            3'd3: die_char = " ";
+            3'd4: die_char = "D";
+            3'd5: die_char = "I";
+            3'd6: die_char = "E";
+            default: die_char = " ";
+        endcase
+    end
+    wire die_px;
+    font_8x8 u_font_die (.char_code(die_char), .row(die_dy[5:3]), .col(die_dx[5:3]), .pixel_on(die_px));
+    wire on_die_text = in_die_box && die_px;
+
+    // 3) "PRESS RESET TO RESTART" (22 ตัวอักษร, ขนาดตัวละ 24x24 px -> กว้าง 528 px, กึ่งกลางจอ x=56..583, y=376..399)
+    wire in_rst_box = (x >= 10'd56 && x < 10'd584) && (y >= 10'd376 && y < 10'd400);
+    wire [9:0] rst_dx = x - 10'd56;
+    wire [9:0] rst_dy = y - 10'd376;
+    wire [20:0] rst_dx_mul = rst_dx * 12'd683;
+    wire [7:0]  rst_dx_d3  = rst_dx_mul[18:11]; // หาร 3 แบบแม่นยำ (0..175)
+    wire [12:0] rst_dy_mul = rst_dy * 8'd86;
+    wire [2:0]  rst_row    = rst_dy_mul[10:8];  // หาร 3 แบบแม่นยำ (0..7)
+    reg [7:0] rst_char;
+    always @(*) begin
+        case (rst_dx_d3[7:3])
+            5'd0:  rst_char = "P";
+            5'd1:  rst_char = "R";
+            5'd2:  rst_char = "E";
+            5'd3:  rst_char = "S";
+            5'd4:  rst_char = "S";
+            5'd5:  rst_char = " ";
+            5'd6:  rst_char = "R";
+            5'd7:  rst_char = "E";
+            5'd8:  rst_char = "S";
+            5'd9:  rst_char = "E";
+            5'd10: rst_char = "T";
+            5'd11: rst_char = " ";
+            5'd12: rst_char = "T";
+            5'd13: rst_char = "O";
+            5'd14: rst_char = " ";
+            5'd15: rst_char = "R";
+            5'd16: rst_char = "E";
+            5'd17: rst_char = "S";
+            5'd18: rst_char = "T";
+            5'd19: rst_char = "A";
+            5'd20: rst_char = "R";
+            5'd21: rst_char = "T";
+            default: rst_char = " ";
+        endcase
+    end
+    wire rst_px;
+    font_8x8 u_font_rst (.char_code(rst_char), .row(rst_row), .col(rst_dx_d3[2:0]), .pixel_on(rst_px));
+    wire on_restart_text = in_rst_box && rst_px;
     
+    // =========================================================================
+    // Pipeline 2 จังหวะ ให้ตรงกับ Latency ของ ROM
+    // =========================================================================
     reg on_player_1=0, on_boss_1=0, on_minion_1=0, on_item_1=0;
     reg see_player_2=0, see_boss_2=0, see_minion_2=0, see_item_2=0;
     reg on_bar_1=0, on_bar_2=0, on_warn_1=0, on_warn_2=0;
@@ -203,33 +294,51 @@ module vga_render (
     reg on_php_bg_2=0, on_php_fg_2=0, on_bhp_bg_2=0, on_bhp_fg_2=0;
     reg boss_dying_1=0, boss_dying_2=0, minion_dying_1=0, minion_dying_2=0;
     reg game_won_1=0, game_won_2=0;
+    reg is_dead_1=0, is_dead_2=0;
+    reg on_win_text_1=0, on_win_text_2=0;
+    reg on_die_text_1=0, on_die_text_2=0;
+    reg on_rst_text_1=0, on_rst_text_2=0;
     reg vid_1=0, vid_2=0, hs_1=1, hs_2=1, vs_1=1, vs_2=1;
 
     always @(posedge clk) begin
-        on_player_1 <= game_won ? 0 : on_sprite; 
-        on_boss_1   <= on_boss_eval; 
-        on_minion_1 <= on_minion;
-        on_item_1   <= on_item;
-        on_bar_1    <= on_barrier; on_warn_1 <= on_boss_warn | on_minion_warn;
-        on_php_bg_1 <= on_php_bg; on_php_fg_1 <= on_php_fg; on_bhp_bg_1 <= on_bhp_bg; on_bhp_fg_1 <= on_bhp_fg;
-        on_mhp_bg_1 <= on_mhp_bg; on_mhp_fg_1 <= on_mhp_fg;
-        boss_dying_1 <= boss_dying; minion_dying_1 <= minion_is_dying; game_won_1 <= game_won;
+        on_player_1   <= game_won ? 0 : on_sprite; 
+        on_boss_1     <= on_boss_eval; 
+        on_minion_1   <= on_minion;
+        on_item_1     <= on_item;
+        on_bar_1      <= on_barrier; on_warn_1 <= on_boss_warn | on_minion_warn;
+        on_php_bg_1   <= on_php_bg; on_php_fg_1 <= on_php_fg; on_bhp_bg_1 <= on_bhp_bg; on_bhp_fg_1 <= on_bhp_fg;
+        on_mhp_bg_1   <= on_mhp_bg; on_mhp_fg_1 <= on_mhp_fg;
+        boss_dying_1  <= boss_dying; minion_dying_1 <= minion_is_dying; 
+        game_won_1    <= game_won;
+        is_dead_1     <= (player_hp == 9'd0) && !game_won;
+        on_win_text_1 <= on_win_text;
+        on_die_text_1 <= on_die_text;
+        on_rst_text_1 <= on_restart_text;
         vid_1 <= video_on; hs_1 <= hsync; vs_1 <= vsync;
         
-        see_player_2 <= on_player_1 && (q_a != 8'd0);
-        see_boss_2   <= on_boss_1   && (q_b != 8'd0);
-        see_minion_2 <= !on_boss_1 && on_minion_1 && (q_b != 8'd0);
-        see_item_2   <= !on_boss_1 && !on_minion_1 && on_item_1 && (q_b != 8'd0);
+        see_player_2  <= on_player_1 && (q_a != 8'd0);
+        see_boss_2    <= on_boss_1   && (q_b != 8'd0);
+        see_minion_2  <= !on_boss_1 && on_minion_1 && (q_b != 8'd0);
+        see_item_2    <= !on_boss_1 && !on_minion_1 && on_item_1 && (q_b != 8'd0);
         
-        on_bar_2 <= on_bar_1; on_warn_2 <= on_warn_1;
-        on_php_bg_2 <= on_php_bg_1; on_php_fg_2 <= on_php_fg_1;
-        on_bhp_bg_2 <= on_bhp_bg_1; on_bhp_fg_2 <= on_bhp_fg_1;
-        on_mhp_bg_2 <= on_mhp_bg_1; on_mhp_fg_2 <= on_mhp_fg_1;
-        boss_dying_2 <= boss_dying_1; minion_dying_2 <= minion_dying_1; game_won_2 <= game_won_1;
+        on_bar_2      <= on_bar_1; on_warn_2 <= on_warn_1;
+        on_php_bg_2   <= on_php_bg_1; on_php_fg_2 <= on_php_fg_1;
+        on_bhp_bg_2   <= on_bhp_bg_1; on_bhp_fg_2 <= on_bhp_fg_1;
+        on_mhp_bg_2   <= on_mhp_bg_1; on_mhp_fg_2 <= on_mhp_fg_1;
+        boss_dying_2  <= boss_dying_1; minion_dying_2 <= minion_dying_1; 
+        game_won_2    <= game_won_1;
+        is_dead_2     <= is_dead_1;
+        on_win_text_2 <= on_win_text_1;
+        on_die_text_2 <= on_die_text_1;
+        on_rst_text_2 <= on_rst_text_1;
         vid_2 <= vid_1; hs_2 <= hs_1; vs_2 <= vs_1;
         
         {VGA_R, VGA_G, VGA_B} <= !vid_2 ? 12'h000 : 
-                                 game_won_2   ? (see_boss_2 ? color_b : 12'h000) : 
+                                 game_won_2   ? (on_win_text_2 ? 12'h0F0 : 
+                                                 on_rst_text_2 ? 12'hFFF : 
+                                                 see_boss_2    ? color_b : 12'h000) : 
+                                 is_dead_2    ? (on_die_text_2 ? 12'hF00 : 
+                                                 on_rst_text_2 ? 12'hFFF : 12'h000) : 
                                  on_php_fg_2  ? 12'h0F0 : on_php_bg_2 ? 12'h800 :
                                  on_bhp_fg_2  ? 12'h0F0 : on_bhp_bg_2 ? 12'h800 : 
                                  on_mhp_fg_2  ? 12'h0F0 : on_mhp_bg_2 ? 12'h800 :
@@ -242,4 +351,152 @@ module vga_render (
                                  map_color;
         VGA_HS <= hs_2; VGA_VS <= vs_2;
     end
+endmodule
+
+// ============================================================================
+// ตารางฟอนต์ 8x8 แบบ Combinational (ไม่ใช้ BRAM)
+// ============================================================================
+module font_8x8 (
+    input  wire [7:0] char_code,
+    input  wire [2:0] row,
+    input  wire [2:0] col,
+    output wire       pixel_on
+);
+    reg [7:0] row_bits;
+    always @(*) begin
+        case (char_code)
+            "A": case (row)
+                3'd0: row_bits = 8'b00111000;
+                3'd1: row_bits = 8'b01000100;
+                3'd2: row_bits = 8'b10000010;
+                3'd3: row_bits = 8'b10000010;
+                3'd4: row_bits = 8'b11111110;
+                3'd5: row_bits = 8'b10000010;
+                3'd6: row_bits = 8'b10000010;
+                default: row_bits = 8'b00000000;
+            endcase
+            "C": case (row)
+                3'd0: row_bits = 8'b01111100;
+                3'd1: row_bits = 8'b10000010;
+                3'd2: row_bits = 8'b10000000;
+                3'd3: row_bits = 8'b10000000;
+                3'd4: row_bits = 8'b10000000;
+                3'd5: row_bits = 8'b10000010;
+                3'd6: row_bits = 8'b01111100;
+                default: row_bits = 8'b00000000;
+            endcase
+            "D": case (row)
+                3'd0: row_bits = 8'b11111000;
+                3'd1: row_bits = 8'b10000100;
+                3'd2: row_bits = 8'b10000010;
+                3'd3: row_bits = 8'b10000010;
+                3'd4: row_bits = 8'b10000010;
+                3'd5: row_bits = 8'b10000100;
+                3'd6: row_bits = 8'b11111000;
+                default: row_bits = 8'b00000000;
+            endcase
+            "E": case (row)
+                3'd0: row_bits = 8'b11111110;
+                3'd1: row_bits = 8'b10000000;
+                3'd2: row_bits = 8'b10000000;
+                3'd3: row_bits = 8'b11111100;
+                3'd4: row_bits = 8'b10000000;
+                3'd5: row_bits = 8'b10000000;
+                3'd6: row_bits = 8'b11111110;
+                default: row_bits = 8'b00000000;
+            endcase
+            "I": case (row)
+                3'd0: row_bits = 8'b01111100;
+                3'd1: row_bits = 8'b00010000;
+                3'd2: row_bits = 8'b00010000;
+                3'd3: row_bits = 8'b00010000;
+                3'd4: row_bits = 8'b00010000;
+                3'd5: row_bits = 8'b00010000;
+                3'd6: row_bits = 8'b01111100;
+                default: row_bits = 8'b00000000;
+            endcase
+            "O": case (row)
+                3'd0: row_bits = 8'b01111100;
+                3'd1: row_bits = 8'b10000010;
+                3'd2: row_bits = 8'b10000010;
+                3'd3: row_bits = 8'b10000010;
+                3'd4: row_bits = 8'b10000010;
+                3'd5: row_bits = 8'b10000010;
+                3'd6: row_bits = 8'b01111100;
+                default: row_bits = 8'b00000000;
+            endcase
+            "P": case (row)
+                3'd0: row_bits = 8'b11111100;
+                3'd1: row_bits = 8'b10000010;
+                3'd2: row_bits = 8'b10000010;
+                3'd3: row_bits = 8'b11111100;
+                3'd4: row_bits = 8'b10000000;
+                3'd5: row_bits = 8'b10000000;
+                3'd6: row_bits = 8'b10000000;
+                default: row_bits = 8'b00000000;
+            endcase
+            "R": case (row)
+                3'd0: row_bits = 8'b11111100;
+                3'd1: row_bits = 8'b10000010;
+                3'd2: row_bits = 8'b10000010;
+                3'd3: row_bits = 8'b11111100;
+                3'd4: row_bits = 8'b10001000;
+                3'd5: row_bits = 8'b10000100;
+                3'd6: row_bits = 8'b10000010;
+                default: row_bits = 8'b00000000;
+            endcase
+            "S": case (row)
+                3'd0: row_bits = 8'b01111100;
+                3'd1: row_bits = 8'b10000010;
+                3'd2: row_bits = 8'b10000000;
+                3'd3: row_bits = 8'b01111100;
+                3'd4: row_bits = 8'b00000010;
+                3'd5: row_bits = 8'b10000010;
+                3'd6: row_bits = 8'b01111100;
+                default: row_bits = 8'b00000000;
+            endcase
+            "T": case (row)
+                3'd0: row_bits = 8'b11111110;
+                3'd1: row_bits = 8'b00010000;
+                3'd2: row_bits = 8'b00010000;
+                3'd3: row_bits = 8'b00010000;
+                3'd4: row_bits = 8'b00010000;
+                3'd5: row_bits = 8'b00010000;
+                3'd6: row_bits = 8'b00010000;
+                default: row_bits = 8'b00000000;
+            endcase
+            "U": case (row)
+                3'd0: row_bits = 8'b10000010;
+                3'd1: row_bits = 8'b10000010;
+                3'd2: row_bits = 8'b10000010;
+                3'd3: row_bits = 8'b10000010;
+                3'd4: row_bits = 8'b10000010;
+                3'd5: row_bits = 8'b10000010;
+                3'd6: row_bits = 8'b01111100;
+                default: row_bits = 8'b00000000;
+            endcase
+            "V": case (row)
+                3'd0: row_bits = 8'b10000010;
+                3'd1: row_bits = 8'b10000010;
+                3'd2: row_bits = 8'b10000010;
+                3'd3: row_bits = 8'b10000010;
+                3'd4: row_bits = 8'b01000100;
+                3'd5: row_bits = 8'b00101000;
+                3'd6: row_bits = 8'b00010000;
+                default: row_bits = 8'b00000000;
+            endcase
+            "Y": case (row)
+                3'd0: row_bits = 8'b10000010;
+                3'd1: row_bits = 8'b01000100;
+                3'd2: row_bits = 8'b00101000;
+                3'd3: row_bits = 8'b00010000;
+                3'd4: row_bits = 8'b00010000;
+                3'd5: row_bits = 8'b00010000;
+                3'd6: row_bits = 8'b00010000;
+                default: row_bits = 8'b00000000;
+            endcase
+            default: row_bits = 8'b00000000;
+        endcase
+    end
+    assign pixel_on = row_bits[3'd7 - col];
 endmodule
