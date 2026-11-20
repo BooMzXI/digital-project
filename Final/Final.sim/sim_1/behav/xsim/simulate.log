@@ -1,6 +1,20 @@
 Time resolution is 1 ps
-========================================
- SUCCESS: Image saved as game_screen.ppm
-========================================
-$finish called at time : 49280685 ns : File "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sim_1/new/test.v" Line 60
-INFO: xsimkernel Simulation Memory Usage: 40424 KB (Peak: 40424 KB), Simulation CPU Usage: 151843 ms
+==================================================
+   STARTING END-SCREEN SIMULATION (DIE & WIN)     
+==================================================
+
+--- [TEST 1] Simulating Player Death ---
+Player HP after boss hit = 0 (Expected: 0)
+[INFO] Saved VGA frame to screen_die.ppm
+[FAIL] Unexpected color on Death screen: top=000, rst=000
+
+--- [TEST 2] Pressing Reset & Simulating Boss Victory ---
+Game Won Flag = 1 (Expected: 1)
+[INFO] Saved VGA frame to screen_win.ppm
+[DIAG] Frame 27 non-zero sprite indices = 10492 (sample q_b = 0xff), visible RGB pixels = 8616
+[FAIL] Unexpected color on Victory screen: top=000, rst=000
+
+==================================================
+   SIMULATION COMPLETED SUCCESSFULLY!             
+==================================================
+$finish called at time : 24692280 ns : File "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sim_1/new/ending.v" Line 221

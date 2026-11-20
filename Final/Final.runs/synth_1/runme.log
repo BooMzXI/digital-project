@@ -8,7 +8,7 @@
   **** SW Build 5239630 on Fri Nov 08 22:35:27 MST 2024
   **** IP Build 5239520 on Sun Nov 10 16:12:51 MST 2024
   **** SharedData Build 5239561 on Fri Nov 08 14:39:27 MST 2024
-  **** Start of session at: Thu Nov 19 21:14:03 2026
+  **** Start of session at: Fri Nov 20 21:03:57 2026
     ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
     ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 
@@ -25,9 +25,9 @@ INFO: [Designutils 20-5440] No compile time benefit to using incremental synthes
 INFO: [Designutils 20-4379] Flow is switching to default flow due to incremental criteria not met. If you would like to alter this behaviour and have the flow terminate instead, please set the following parameter config_implementation {autoIncr.Synth.RejectBehavior Terminate}
 INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
 INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
-INFO: [Synth 8-7075] Helper process launched with PID 32204
+INFO: [Synth 8-7075] Helper process launched with PID 10704
 ---------------------------------------------------------------------------------
-Starting RTL Elaboration : Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 1046.953 ; gain = 470.582
+Starting RTL Elaboration : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 1047.031 ; gain = 469.113
 ---------------------------------------------------------------------------------
 INFO: [Synth 8-6157] synthesizing module 'lab08_top' [C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/lab08_top.v:5]
 INFO: [Synth 8-6157] synthesizing module 'clk_gen' [C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/clk_gen.v:4]
@@ -75,6 +75,8 @@ INFO: [Synth 8-6157] synthesizing module 'rom_lut__parameterized0' [C:/Users/phu
 	Parameter FILE bound to: spr_pal.mem - type: string 
 INFO: [Synth 8-3876] $readmem data file 'spr_pal.mem' is read successfully [C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/roms.v:28]
 INFO: [Synth 8-6155] done synthesizing module 'rom_lut__parameterized0' (0#1) [C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/roms.v:19]
+INFO: [Synth 8-6157] synthesizing module 'font_8x8' [C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/vga_render.v:359]
+INFO: [Synth 8-6155] done synthesizing module 'font_8x8' (0#1) [C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/vga_render.v:359]
 INFO: [Synth 8-6155] done synthesizing module 'vga_render' (0#1) [C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/vga_render.v:2]
 INFO: [Synth 8-6157] synthesizing module 'tick_gen' [C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/Lab06/mod10_jk.v:128]
 	Parameter DIV bound to: 25000000 - type: integer 
@@ -146,21 +148,20 @@ WARNING: [Synth 8-7129] Port addr[0] in module rom_map_800x512 is either unconne
 WARNING: [Synth 8-7129] Port current_form[2] in module vga_render is either unconnected or has no load
 WARNING: [Synth 8-7129] Port current_form[1] in module vga_render is either unconnected or has no load
 WARNING: [Synth 8-7129] Port current_form[0] in module vga_render is either unconnected or has no load
-WARNING: [Synth 8-7129] Port player_hp[0] in module vga_render is either unconnected or has no load
 WARNING: [Synth 8-7129] Port player_max_hp[0] in module vga_render is either unconnected or has no load
 ---------------------------------------------------------------------------------
-Finished RTL Elaboration : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 1359.277 ; gain = 782.906
+Finished RTL Elaboration : Time (s): cpu = 00:00:11 ; elapsed = 00:00:12 . Memory (MB): peak = 1360.324 ; gain = 782.406
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 1359.277 ; gain = 782.906
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 1360.324 ; gain = 782.406
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 1359.277 ; gain = 782.906
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 1360.324 ; gain = 782.406
 ---------------------------------------------------------------------------------
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.102 . Memory (MB): peak = 1359.277 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.085 . Memory (MB): peak = 1360.324 ; gain = 0.000
 INFO: [Netlist 29-17] Analyzing 1 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-570] Preparing netlist for logic optimization
@@ -174,29 +175,29 @@ Resolution: To avoid this warning, move constraints listed in [.Xil/lab08_top_pr
 INFO: [Timing 38-2] Deriving generated clocks
 Completed Processing XDC Constraints
 
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 1359.277 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 1360.324 ; gain = 0.000
 INFO: [Project 1-111] Unisim Transformation Summary:
   A total of 1 instances were transformed.
   MMCME2_BASE => MMCME2_ADV: 1 instance 
 
-Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.016 . Memory (MB): peak = 1359.277 ; gain = 0.000
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.019 . Memory (MB): peak = 1360.324 ; gain = 0.000
 INFO: [Designutils 20-5440] No compile time benefit to using incremental synthesis; A full resynthesis will be run
 INFO: [Designutils 20-4379] Flow is switching to default flow due to incremental criteria not met. If you would like to alter this behaviour and have the flow terminate instead, please set the following parameter config_implementation {autoIncr.Synth.RejectBehavior Terminate}
 ---------------------------------------------------------------------------------
-Finished Constraint Validation : Time (s): cpu = 00:00:21 ; elapsed = 00:00:22 . Memory (MB): peak = 1359.277 ; gain = 782.906
+Finished Constraint Validation : Time (s): cpu = 00:00:20 ; elapsed = 00:00:21 . Memory (MB): peak = 1360.324 ; gain = 782.406
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Loading Part and Timing Information
 ---------------------------------------------------------------------------------
 Loading part: xc7a100tcsg324-1
 ---------------------------------------------------------------------------------
-Finished Loading Part and Timing Information : Time (s): cpu = 00:00:21 ; elapsed = 00:00:22 . Memory (MB): peak = 1359.277 ; gain = 782.906
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:20 ; elapsed = 00:00:21 . Memory (MB): peak = 1360.324 ; gain = 782.406
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Applying 'set_property' XDC Constraints
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:21 ; elapsed = 00:00:22 . Memory (MB): peak = 1359.277 ; gain = 782.906
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:20 ; elapsed = 00:00:21 . Memory (MB): peak = 1360.324 ; gain = 782.406
 ---------------------------------------------------------------------------------
 INFO: [Synth 8-802] inferred FSM for state register 'boss_state_reg' in module 'player'
 INFO: [Synth 8-802] inferred FSM for state register 'minion_state_reg' in module 'player'
@@ -217,7 +218,7 @@ INFO: [Synth 8-3354] encoded FSM with state register 'boss_state_reg' using enco
 ---------------------------------------------------------------------------------------------------
 INFO: [Synth 8-3354] encoded FSM with state register 'minion_state_reg' using encoding 'one-hot' in module 'player'
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:24 ; elapsed = 00:00:25 . Memory (MB): peak = 1359.277 ; gain = 782.906
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:23 ; elapsed = 00:00:24 . Memory (MB): peak = 1360.324 ; gain = 782.406
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start RTL Component Statistics 
@@ -230,13 +231,13 @@ Detailed RTL Component Info :
 	   3 Input   13 Bit       Adders := 16    
 	   3 Input   12 Bit       Adders := 6     
 	   2 Input   11 Bit       Adders := 135   
-	   2 Input   10 Bit       Adders := 60    
+	   2 Input   10 Bit       Adders := 62    
 	   3 Input   10 Bit       Adders := 3     
-	   2 Input    9 Bit       Adders := 4     
+	   2 Input    9 Bit       Adders := 6     
 	   2 Input    8 Bit       Adders := 2     
-	   2 Input    6 Bit       Adders := 25    
+	   2 Input    6 Bit       Adders := 26    
 	   3 Input    6 Bit       Adders := 40    
-	   2 Input    5 Bit       Adders := 1     
+	   2 Input    5 Bit       Adders := 2     
 	   2 Input    4 Bit       Adders := 4     
 	   2 Input    3 Bit       Adders := 3     
 	   2 Input    2 Bit       Adders := 1     
@@ -254,7 +255,7 @@ Detailed RTL Component Info :
 	                4 Bit    Registers := 10    
 	                3 Bit    Registers := 3     
 	                2 Bit    Registers := 1     
-	                1 Bit    Registers := 49    
+	                1 Bit    Registers := 57    
 +---Muxes : 
 	   2 Input   32 Bit        Muxes := 68    
 	   2 Input   31 Bit        Muxes := 2     
@@ -277,7 +278,7 @@ Detailed RTL Component Info :
 	   2 Input   14 Bit        Muxes := 3     
 	   4 Input   14 Bit        Muxes := 1     
 	   2 Input   13 Bit        Muxes := 30    
-	   2 Input   12 Bit        Muxes := 12    
+	   2 Input   12 Bit        Muxes := 15    
 	   4 Input   12 Bit        Muxes := 1     
 	   2 Input   11 Bit        Muxes := 2     
 	   3 Input   10 Bit        Muxes := 2     
@@ -288,11 +289,13 @@ Detailed RTL Component Info :
 	   4 Input    9 Bit        Muxes := 4     
 	   3 Input    9 Bit        Muxes := 3     
 	   5 Input    9 Bit        Muxes := 3     
-	   2 Input    8 Bit        Muxes := 24    
+	   2 Input    8 Bit        Muxes := 27    
 	   3 Input    8 Bit        Muxes := 2     
 	   4 Input    8 Bit        Muxes := 2     
+	   8 Input    8 Bit        Muxes := 36    
 	   6 Input    8 Bit        Muxes := 1     
 	   2 Input    7 Bit        Muxes := 4     
+	   8 Input    7 Bit        Muxes := 4     
 	   2 Input    6 Bit        Muxes := 124   
 	   4 Input    6 Bit        Muxes := 3     
 	   2 Input    5 Bit        Muxes := 5     
@@ -322,49 +325,55 @@ WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
 DSP Report: Generating DSP map_addr, operation Mode is: C+A*(B:0x320).
 DSP Report: operator map_addr is absorbed into DSP map_addr.
 DSP Report: operator map_addr0 is absorbed into DSP map_addr.
+DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x1f).
+DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
+DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x4d).
+DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
+DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x4d).
+DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
 DSP Report: Generating DSP on_mhp_fg_c3, operation Mode is: A*(B:0x19).
 DSP Report: operator on_mhp_fg_c3 is absorbed into DSP on_mhp_fg_c3.
+DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x4d).
+DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
+DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x1f).
+DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
+DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x1f).
+DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
 DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x19).
 DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
 DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x19).
 DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
-DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x1f).
-DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
-DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x1f).
-DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
-DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x1f).
-DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
-DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x1f).
-DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
-DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x4d).
-DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
 DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x19).
 DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
-DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x4d).
+DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x1f).
 DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
 DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x4d).
 DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
-DSP Report: Generating DSP on_mhp_fg_c4, operation Mode is: A*(B:0x4d).
-DSP Report: operator on_mhp_fg_c4 is absorbed into DSP on_mhp_fg_c4.
+DSP Report: Generating DSP rst_dx_mul, operation Mode is: A*(B:0x2ab).
+DSP Report: operator rst_dx_mul is absorbed into DSP rst_dx_mul.
+DSP Report: Generating DSP rst_dy_mul, operation Mode is: A*(B:0x56).
+DSP Report: operator rst_dy_mul is absorbed into DSP rst_dy_mul.
 WARNING: [Synth 8-3917] design lab08_top has port AN[6] driven by constant 1
 WARNING: [Synth 8-3917] design lab08_top has port AN[5] driven by constant 1
 WARNING: [Synth 8-3917] design lab08_top has port AN[4] driven by constant 1
 ---------------------------------------------------------------------------------
-Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:01:13 ; elapsed = 00:01:15 . Memory (MB): peak = 1532.992 ; gain = 956.621
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:01:20 ; elapsed = 00:01:22 . Memory (MB): peak = 1568.117 ; gain = 990.199
 ---------------------------------------------------------------------------------
- Sort Area is vga_render__GB0 on_mhp_fg_c3_2 : 0 0 : 228 228 : Used 1 time 0
- Sort Area is vga_render__GB0 on_mhp_fg_c4_4 : 0 0 : 228 228 : Used 1 time 0
- Sort Area is vga_render__GB0 on_mhp_fg_c4_5 : 0 0 : 228 228 : Used 1 time 0
- Sort Area is vga_render__GB0 on_mhp_fg_c4_6 : 0 0 : 228 228 : Used 1 time 0
- Sort Area is vga_render__GB0 on_mhp_fg_c4_7 : 0 0 : 228 228 : Used 1 time 0
- Sort Area is vga_render__GB0 on_mhp_fg_c4_8 : 0 0 : 228 228 : Used 1 time 0
- Sort Area is vga_render__GB0 on_mhp_fg_c4_9 : 0 0 : 228 228 : Used 1 time 0
- Sort Area is vga_render__GB1 on_mhp_fg_c4_c : 0 0 : 228 228 : Used 1 time 0
- Sort Area is vga_render__GB0 on_mhp_fg_c4_a : 0 0 : 226 226 : Used 1 time 0
- Sort Area is vga_render__GB2 on_mhp_fg_c4_d : 0 0 : 226 226 : Used 1 time 0
- Sort Area is vga_render__GB2 on_mhp_fg_c4_e : 0 0 : 226 226 : Used 1 time 0
- Sort Area is vga_render__GB3 on_mhp_fg_c4_f : 0 0 : 226 226 : Used 1 time 0
+ Sort Area is vga_render__GB4 rst_dx_mul_10 : 0 0 : 287 287 : Used 1 time 0
+ Sort Area is vga_render__GB0 on_mhp_fg_c3_7 : 0 0 : 241 241 : Used 1 time 0
+ Sort Area is vga_render__GB0 on_mhp_fg_c4_2 : 0 0 : 241 241 : Used 1 time 0
+ Sort Area is vga_render__GB3 on_mhp_fg_c4_9 : 0 0 : 241 241 : Used 1 time 0
+ Sort Area is vga_render__GB3 on_mhp_fg_c4_a : 0 0 : 241 241 : Used 1 time 0
+ Sort Area is vga_render__GB3 on_mhp_fg_c4_b : 0 0 : 241 241 : Used 1 time 0
+ Sort Area is vga_render__GB3 on_mhp_fg_c4_c : 0 0 : 241 241 : Used 1 time 0
+ Sort Area is vga_render__GB4 on_mhp_fg_c4_d : 0 0 : 241 241 : Used 1 time 0
+ Sort Area is vga_render__GB4 on_mhp_fg_c4_e : 0 0 : 241 241 : Used 1 time 0
+ Sort Area is vga_render__GB0 on_mhp_fg_c4_4 : 0 0 : 226 226 : Used 1 time 0
+ Sort Area is vga_render__GB0 on_mhp_fg_c4_6 : 0 0 : 226 226 : Used 1 time 0
+ Sort Area is vga_render__GB3 on_mhp_fg_c4_8 : 0 0 : 226 226 : Used 1 time 0
+ Sort Area is vga_render__GB4 on_mhp_fg_c4_f : 0 0 : 226 226 : Used 1 time 0
  Sort Area is vga_render__GB0 map_addr_0 : 0 0 : 186 186 : Used 1 time 0
+ Sort Area is vga_render__GB4 rst_dy_mul_12 : 0 0 : 151 151 : Used 1 time 0
 ---------------------------------------------------------------------------------
 Start ROM, RAM, DSP, Shift Register and Retiming Reporting
 ---------------------------------------------------------------------------------
@@ -375,9 +384,11 @@ ROM: Preliminary Mapping Report
 +------------+------------+---------------+----------------+
 |rom_lut     | mem        | 128x12        | LUT            | 
 |rom_lut     | mem        | 256x12        | LUT            | 
+|vga_render  | rst_char   | 32x7          | LUT            | 
 |rom_lut     | p_0_out    | 256x12        | LUT            | 
 |rom_lut     | p_0_out    | 256x12        | LUT            | 
 |lab08_top   | p_0_out    | 128x12        | LUT            | 
+|lab08_top   | rst_char   | 32x7          | LUT            | 
 +------------+------------+---------------+----------------+
 
 
@@ -386,18 +397,20 @@ DSP: Preliminary Mapping Report (see note below. The ' indicates corresponding R
 |Module Name | DSP Mapping   | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
 +------------+---------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
 |vga_render  | C+A*(B:0x320) | 10     | 10     | 10     | -      | 19     | 0    | 0    | 0    | -    | -     | 0    | 0    | 
+|vga_render  | A*(B:0x1f)    | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*(B:0x4d)    | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*(B:0x4d)    | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*(B:0x19)    | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*(B:0x4d)    | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*(B:0x1f)    | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*(B:0x1f)    | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
 |vga_render  | A*(B:0x19)    | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
 |vga_render  | A*(B:0x19)    | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
 |vga_render  | A*(B:0x19)    | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
 |vga_render  | A*(B:0x1f)    | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*(B:0x1f)    | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*(B:0x1f)    | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*(B:0x1f)    | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
 |vga_render  | A*(B:0x4d)    | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*(B:0x19)    | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*(B:0x4d)    | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*(B:0x4d)    | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*(B:0x4d)    | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*(B:0x2ab)   | 10     | 10     | -      | -      | 20     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*(B:0x56)    | 10     | 7      | -      | -      | 17     | 0    | 0    | -    | -    | -     | 0    | 0    | 
 +------------+---------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
 
 Note: The table above is a preliminary report that shows the DSPs inferred at the current stage of the synthesis flow. Some DSP may be reimplemented as non DSP primitives later in the synthesis flow. Multiple instantiated DSPs are reported only once.
@@ -408,20 +421,19 @@ Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
 Start Applying XDC Timing Constraints
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Applying XDC Timing Constraints : Time (s): cpu = 00:01:20 ; elapsed = 00:01:22 . Memory (MB): peak = 1532.992 ; gain = 956.621
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:01:25 ; elapsed = 00:01:28 . Memory (MB): peak = 1568.117 ; gain = 990.199
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Timing Optimization
 ---------------------------------------------------------------------------------
-info: optimization accepted worst group hill climbing move (29104.0/oG. 160.0ps)
 ---------------------------------------------------------------------------------
-Finished Timing Optimization : Time (s): cpu = 00:01:49 ; elapsed = 00:01:52 . Memory (MB): peak = 1736.117 ; gain = 1159.746
+Finished Timing Optimization : Time (s): cpu = 00:02:16 ; elapsed = 00:02:19 . Memory (MB): peak = 1828.840 ; gain = 1250.922
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Technology Mapping
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Technology Mapping : Time (s): cpu = 00:01:53 ; elapsed = 00:01:56 . Memory (MB): peak = 1749.484 ; gain = 1173.113
+Finished Technology Mapping : Time (s): cpu = 00:02:20 ; elapsed = 00:02:22 . Memory (MB): peak = 1838.543 ; gain = 1260.625
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start IO Insertion
@@ -439,37 +451,37 @@ Start Final Netlist Cleanup
 Finished Final Netlist Cleanup
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished IO Insertion : Time (s): cpu = 00:01:57 ; elapsed = 00:02:00 . Memory (MB): peak = 1774.141 ; gain = 1197.770
+Finished IO Insertion : Time (s): cpu = 00:02:23 ; elapsed = 00:02:26 . Memory (MB): peak = 1857.180 ; gain = 1279.262
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Instances
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Instances : Time (s): cpu = 00:01:57 ; elapsed = 00:02:00 . Memory (MB): peak = 1774.141 ; gain = 1197.770
+Finished Renaming Generated Instances : Time (s): cpu = 00:02:23 ; elapsed = 00:02:26 . Memory (MB): peak = 1857.180 ; gain = 1279.262
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Rebuilding User Hierarchy
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:58 ; elapsed = 00:02:01 . Memory (MB): peak = 1774.141 ; gain = 1197.770
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:02:23 ; elapsed = 00:02:26 . Memory (MB): peak = 1857.180 ; gain = 1279.262
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Ports
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Ports : Time (s): cpu = 00:01:58 ; elapsed = 00:02:01 . Memory (MB): peak = 1774.141 ; gain = 1197.770
+Finished Renaming Generated Ports : Time (s): cpu = 00:02:23 ; elapsed = 00:02:26 . Memory (MB): peak = 1857.180 ; gain = 1279.262
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:01:58 ; elapsed = 00:02:01 . Memory (MB): peak = 1774.141 ; gain = 1197.770
+Finished Handling Custom Attributes : Time (s): cpu = 00:02:24 ; elapsed = 00:02:26 . Memory (MB): peak = 1857.180 ; gain = 1279.262
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Nets
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Nets : Time (s): cpu = 00:01:58 ; elapsed = 00:02:01 . Memory (MB): peak = 1774.141 ; gain = 1197.770
+Finished Renaming Generated Nets : Time (s): cpu = 00:02:24 ; elapsed = 00:02:26 . Memory (MB): peak = 1857.180 ; gain = 1279.262
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start ROM, RAM, DSP, Shift Register and Retiming Reporting
@@ -479,8 +491,8 @@ Static Shift Register Report:
 +------------+---------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
 |Module Name | RTL Name            | Length | Width | Reset Signal | Pull out first Reg | Pull out last Reg | SRL16E | SRLC32E | 
 +------------+---------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
-|lab08_top   | u_render/VGA_VS_reg | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
 |lab08_top   | u_render/VGA_HS_reg | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
+|lab08_top   | u_render/VGA_VS_reg | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
 +------------+---------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
 
 ---------------------------------------------------------------------------------
@@ -494,18 +506,20 @@ DSP Final Report (the ' indicates corresponding REG is set)
 +------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
 |Module Name | DSP Mapping | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
 +------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
-|vga_render  | A*B         | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*B         | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*B         | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
-|vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
 |vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
 |vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
 |vga_render  | A*B         | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*B         | 10     | 10     | -      | -      | 20     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*B         | 10     | 7      | -      | -      | 17     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*B         | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*B         | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*B         | 12     | 7      | -      | -      | 19     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|vga_render  | A*B         | 13     | 5      | -      | -      | 18     | 0    | 0    | -    | -    | -     | 0    | 0    | 
 +------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
 
 
@@ -520,46 +534,48 @@ Report Cell Usage:
 |      |Cell        |Count |
 +------+------------+------+
 |1     |BUFG        |     1|
-|2     |CARRY4      |  1982|
-|3     |DSP48E1     |    12|
-|4     |LUT1        |   503|
-|5     |LUT2        |  2554|
-|6     |LUT3        |  1028|
-|7     |LUT4        |  2434|
-|8     |LUT5        |  2011|
-|9     |LUT6        |  1678|
+|2     |CARRY4      |  1986|
+|3     |DSP48E1     |    14|
+|4     |LUT1        |   506|
+|5     |LUT2        |  2608|
+|6     |LUT3        |   985|
+|7     |LUT4        |  2351|
+|8     |LUT5        |  2091|
+|9     |LUT6        |  1742|
 |10    |MMCME2_BASE |     1|
-|11    |SRL16E      |     2|
-|12    |FDCE        |    68|
-|13    |FDRE        |   642|
-|14    |FDSE        |   109|
-|15    |IBUF        |     8|
-|16    |OBUF        |    32|
+|11    |MUXF7       |    23|
+|12    |MUXF8       |     7|
+|13    |SRL16E      |     2|
+|14    |FDCE        |    68|
+|15    |FDRE        |   660|
+|16    |FDSE        |   107|
+|17    |IBUF        |     8|
+|18    |OBUF        |    32|
 +------+------------+------+
 ---------------------------------------------------------------------------------
-Finished Writing Synthesis Report : Time (s): cpu = 00:01:58 ; elapsed = 00:02:01 . Memory (MB): peak = 1774.141 ; gain = 1197.770
+Finished Writing Synthesis Report : Time (s): cpu = 00:02:24 ; elapsed = 00:02:26 . Memory (MB): peak = 1857.180 ; gain = 1279.262
 ---------------------------------------------------------------------------------
 Synthesis finished with 0 errors, 0 critical warnings and 4 warnings.
-Synthesis Optimization Runtime : Time (s): cpu = 00:01:42 ; elapsed = 00:01:58 . Memory (MB): peak = 1774.141 ; gain = 1197.770
-Synthesis Optimization Complete : Time (s): cpu = 00:01:58 ; elapsed = 00:02:02 . Memory (MB): peak = 1774.141 ; gain = 1197.770
+Synthesis Optimization Runtime : Time (s): cpu = 00:02:09 ; elapsed = 00:02:24 . Memory (MB): peak = 1857.180 ; gain = 1279.262
+Synthesis Optimization Complete : Time (s): cpu = 00:02:24 ; elapsed = 00:02:27 . Memory (MB): peak = 1857.180 ; gain = 1279.262
 INFO: [Project 1-571] Translating synthesized netlist
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.106 . Memory (MB): peak = 1774.141 ; gain = 0.000
-INFO: [Netlist 29-17] Analyzing 1995 Unisim elements for replacement
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.078 . Memory (MB): peak = 1857.180 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 2031 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 WARNING: [Netlist 29-101] Netlist 'lab08_top' is not ideal for floorplanning, since the cellview 'player' contains a large number of primitives.  Please consider enabling hierarchy in synthesis if you want to do floorplanning.
 INFO: [Project 1-570] Preparing netlist for logic optimization
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 1786.945 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.003 . Memory (MB): peak = 1872.043 ; gain = 0.000
 INFO: [Project 1-111] Unisim Transformation Summary:
   A total of 1 instances were transformed.
   MMCME2_BASE => MMCME2_ADV: 1 instance 
 
-Synth Design complete | Checksum: 203cada4
+Synth Design complete | Checksum: a09dbaf5
 INFO: [Common 17-83] Releasing license: Synthesis
-64 Infos, 70 Warnings, 0 Critical Warnings and 0 Errors encountered.
+66 Infos, 69 Warnings, 0 Critical Warnings and 0 Errors encountered.
 synth_design completed successfully
-synth_design: Time (s): cpu = 00:02:04 ; elapsed = 00:02:09 . Memory (MB): peak = 1786.945 ; gain = 1413.059
-Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.044 . Memory (MB): peak = 1786.945 ; gain = 0.000
+synth_design: Time (s): cpu = 00:02:29 ; elapsed = 00:02:43 . Memory (MB): peak = 1872.043 ; gain = 1498.879
+Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.030 . Memory (MB): peak = 1872.043 ; gain = 0.000
 INFO: [Common 17-1381] The checkpoint 'C:/Users/phure/Documents/GitHub/digital-project/Final/Final.runs/synth_1/lab08_top.dcp' has been generated.
 INFO: [Vivado 12-24828] Executing command : report_utilization -file lab08_top_utilization_synth.rpt -pb lab08_top_utilization_synth.pb
-INFO: [Common 17-206] Exiting Vivado at Thu Nov 19 21:16:18 2026...
+INFO: [Common 17-206] Exiting Vivado at Fri Nov 20 21:06:46 2026...
