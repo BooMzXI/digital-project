@@ -34,22 +34,22 @@ module lab08_top (
     wire [3:0]  item_active;
     wire [2:0]  current_form; 
     wire [39:0] flat_item_x, flat_item_y;
-    wire [9:0]  px, py, cam_y;
-    wire [8:0]  cam_x;
+    wire [9:0]  px, py, cam_x, cam_y;
     wire        back, mirror, moving, adv;
     wire        is_attacking;
 
-    // --- Boss and Combat (Expanded Bit-widths for 100k HP) ---
+    // --- Boss and Combat ---
     wire [9:0]  boss_x, boss_y;
     wire [1:0]  boss_state;
-    wire [16:0] boss_hp;           // 17-bit for 100,000 HP
-    wire [8:0]  player_hp;         // 9-bit for 300 HP
+    wire [16:0] boss_hp;
+    wire [8:0]  player_hp;
     wire [8:0]  player_max_hp;     
     
-    // --- Minions and Barrier (Expanded to 208 bits for 13-bit HP array) ---
+    // --- Minions and Barrier ---
     wire [159:0] flat_minion_x, flat_minion_y;
-    wire [207:0] flat_minion_hp;   // 16 * 13 bits
+    wire [207:0] flat_minion_hp;
     wire [1:0]   minion_state;
+    wire [15:0]  minion_active_atk;
     wire [3:0]   barrier_active;
 
     // --- Death and Game Over Signals ---
@@ -69,6 +69,7 @@ module lab08_top (
         .boss_hp(boss_hp), .player_hp(player_hp), .player_max_hp(player_max_hp),
         .flat_minion_x(flat_minion_x), .flat_minion_y(flat_minion_y),
         .flat_minion_hp(flat_minion_hp), .minion_state(minion_state),
+        .minion_active_atk(minion_active_atk),
         .barrier_active(barrier_active),
         .boss_dying(boss_dying), .flat_minion_dying(flat_minion_dying), .game_won(game_won)
     );
@@ -94,6 +95,7 @@ module lab08_top (
         .boss_hp(boss_hp), .player_hp(player_hp), .player_max_hp(player_max_hp),
         .flat_minion_x(flat_minion_x), .flat_minion_y(flat_minion_y),
         .flat_minion_hp(flat_minion_hp), .minion_state(minion_state),
+        .minion_active_atk(minion_active_atk),
         .barrier_active(barrier_active),
         .boss_dying(boss_dying), .flat_minion_dying(flat_minion_dying), .game_won(game_won),
         .VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B), .VGA_HS(VGA_HS), .VGA_VS(VGA_VS)
@@ -108,7 +110,7 @@ module lab08_top (
     always @(posedge clk) begin
         if (rst) begin
             sec_0 <= 0; sec_1 <= 0; min_0 <= 0; min_1 <= 0;
-        end else if (tick_1sec && !game_won && player_hp > 0) begin // Stop timer on win/loss
+        end else if (tick_1sec && !game_won && player_hp > 0) begin
             if (sec_0 == 9) begin
                 sec_0 <= 0;
                 if (sec_1 == 5) begin
@@ -122,7 +124,6 @@ module lab08_top (
         end
     end
 
-    // 3-bit scan selector (8 digits)
     reg [2:0] scan_sel = 0;
     always @(posedge clk) begin
         if (tick_fast) scan_sel <= scan_sel + 1'b1;
@@ -144,6 +145,6 @@ module lab08_top (
     wire [6:0] seg_n;
     seg7_dec u_seg7 (.digit(current_digit), .seg_n(seg_n));
     assign {CG, CF, CE, CD, CC, CB, CA} = seg_n;
-    assign DP = (scan_sel == 3'd2) ? 1'b0 : 1'b1; // DP on Min ones
+    assign DP = (scan_sel == 3'd2) ? 1'b0 : 1'b1;
     assign AN = an_temp;
 endmodule

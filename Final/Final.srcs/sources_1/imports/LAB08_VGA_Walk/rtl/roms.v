@@ -29,9 +29,7 @@ module rom_lut #(
     always @(posedge clk) q <= mem[addr];
 endmodule
 
-// ==========================================
-// Banked Dual-Port ROM for Sprite (No RAMB36E1 Cascade)
-// ==========================================
+// Banked Dual-Port ROM for 28 Sprite Frames (No RAMB36E1 Cascade)
 module rom_2p #(
     parameter DW = 8, AW = 17, DEPTH = 114688,
     parameter FILE = ""
@@ -42,7 +40,6 @@ module rom_2p #(
     input  wire [AW-1:0] addr_b,
     output reg  [DW-1:0] q_b
 );
-    // Split 114,688 words into 3x32K + 1x16K banks (max 32K per bank prevents cascading)
     (* rom_style = "block" *) reg [DW-1:0] mem0 [0:32767];
     (* rom_style = "block" *) reg [DW-1:0] mem1 [0:32767];
     (* rom_style = "block" *) reg [DW-1:0] mem2 [0:32767];
@@ -84,45 +81,47 @@ module rom_2p #(
     end
 endmodule
 
-// ==========================================
-// Banked ROM for 800x512 Map (Saves 49 BRAMs)
-// ==========================================
-module rom_map_800x512 #(
-    parameter DW = 7,
+// Banked ROM for 960x640 Map (614,400 words = 512K + 64K + 16K + 8K)
+module rom_map_960x640 #(
+    parameter DW = 5,
     parameter FILE = ""
 ) (
     input  wire          clk,
-    input  wire [18:0]   addr,
+    input  wire [19:0]   addr,
     output reg  [DW-1:0] q
 );
-    // Split 409,600 words into 3 power-of-2 banks: 262144 + 131072 + 16384 = 409600
-    (* rom_style = "block" *) reg [DW-1:0] mem0 [0:262143];
-    (* rom_style = "block" *) reg [DW-1:0] mem1 [0:131071];
+    (* rom_style = "block" *) reg [DW-1:0] mem0 [0:524287];
+    (* rom_style = "block" *) reg [DW-1:0] mem1 [0:65535];
     (* rom_style = "block" *) reg [DW-1:0] mem2 [0:16383];
+    (* rom_style = "block" *) reg [DW-1:0] mem3 [0:8191];
 
     initial begin : init_blk
-        reg [DW-1:0] init_mem [0:409599];
+        reg [DW-1:0] init_mem [0:614399];
         integer idx;
-        for (idx = 0; idx < 409600; idx = idx + 1) begin
+        for (idx = 0; idx < 614400; idx = idx + 1) begin
             init_mem[idx] = {DW{1'b0}};
         end
         $readmemh(FILE, init_mem);
-        for (idx = 0; idx < 409600; idx = idx + 1) begin
-            if (idx < 262144)
+        for (idx = 0; idx < 614400; idx = idx + 1) begin
+            if (idx < 524288)
                 mem0[idx] = init_mem[idx];
-            else if (idx < 393216)
-                mem1[idx - 262144] = init_mem[idx];
+            else if (idx < 589824)
+                mem1[idx - 524288] = init_mem[idx];
+            else if (idx < 606208)
+                mem2[idx - 589824] = init_mem[idx];
             else
-                mem2[idx - 393216] = init_mem[idx];
+                mem3[idx - 606208] = init_mem[idx];
         end
     end
 
     always @(posedge clk) begin
-        if (!addr[18])
-            q <= mem0[addr[17:0]];
-        else if (!addr[17])
-            q <= mem1[addr[16:0]];
-        else
+        if (!addr[19])
+            q <= mem0[addr[18:0]];
+        else if (!addr[16])
+            q <= mem1[addr[15:0]];
+        else if (!addr[14])
             q <= mem2[addr[13:0]];
+        else
+            q <= mem3[addr[12:0]];
     end
 endmodule

@@ -3,8 +3,8 @@ module player (
     input  wire       clk, rst, tick,              
     input  wire [3:0] btn,               
     input  wire       btn_attack, sw0,               
-    output reg  [9:0] px = 10'd400, py = 10'd450, 
-    output reg  [8:0] cam_x = 0,
+    output reg  [9:0] px = 10'd480, py = 10'd540, 
+    output reg  [9:0] cam_x = 0,
     output reg  [9:0] cam_y = 0,
     output reg        back = 0, mirror = 0,        
     output wire       moving, adv,                
@@ -15,13 +15,14 @@ module player (
     
     output reg        is_attacking = 0,
     output reg  [8:0] player_hp = 9'd100, player_max_hp = 9'd100, 
-    output reg  [9:0] boss_x = 10'd400, boss_y = 10'd256, 
+    output reg  [9:0] boss_x = 10'd480, boss_y = 10'd320, 
     output reg  [1:0] boss_state = 0,   
     output reg  [16:0] boss_hp = 17'd100000, 
     
     output wire [159:0] flat_minion_x, flat_minion_y,
     output wire [207:0] flat_minion_hp,      
     output reg  [1:0]   minion_state = 0,
+    output reg  [15:0]  minion_active_atk = 16'd0,
     output wire [3:0]   barrier_active,
     
     output wire         boss_dying,
@@ -41,7 +42,7 @@ module player (
     
     reg [5:0] m_dt [0:15];
     reg [5:0] boss_dt = 0;
-    reg       m_move_tick = 0; // Speed divider for minion patrol
+    reg       m_move_tick = 0;
     
     assign flat_item_x = {item_x[3], item_x[2], item_x[1], item_x[0]}; 
     assign flat_item_y = {item_y[3], item_y[2], item_y[1], item_y[0]};
@@ -66,7 +67,8 @@ module player (
     wire [9:0] target_y = item_y[current_form];
     wire [9:0] dx_b = (px > boss_x) ? (px - boss_x) : (boss_x - px);
     wire [9:0] dy_b = (py > boss_y) ? (py - boss_y) : (boss_y - py);
-    integer dx_m, dy_m, dmg_hit, minion_near, i;
+    integer dx_m, dy_m, dmg_hit, i;
+    reg [15:0] next_atk_mask;
     
     wire [13:0] p_dmg = (current_form == 3'd0) ? 14'd1 :
                         (current_form == 3'd1) ? 14'd10 :
@@ -78,17 +80,18 @@ module player (
     reg [1:0] rand_shift = 0;
     always @(posedge clk) rand_shift <= rand_shift + 1'b1;
 
-    wire [9:0] ix0 = (rand_shift==0)?10'd150 : (rand_shift==1)?10'd650 : (rand_shift==2)?10'd650 : 10'd150;
-    wire [9:0] iy0 = (rand_shift==0)?10'd120 : (rand_shift==1)?10'd120 : (rand_shift==2)?10'd392 : 10'd392;
+    // พิกัด 4 มุมสำหรับแมพ 960x640 (ซ้าย=160, ขวา=800, บน=150, ล่าง=490)
+    wire [9:0] ix0 = (rand_shift==0)?10'd160 : (rand_shift==1)?10'd800 : (rand_shift==2)?10'd800 : 10'd160;
+    wire [9:0] iy0 = (rand_shift==0)?10'd150 : (rand_shift==1)?10'd150 : (rand_shift==2)?10'd490 : 10'd490;
 
-    wire [9:0] ix1 = (rand_shift==0)?10'd650 : (rand_shift==1)?10'd650 : (rand_shift==2)?10'd150 : 10'd150;
-    wire [9:0] iy1 = (rand_shift==0)?10'd120 : (rand_shift==1)?10'd392 : (rand_shift==2)?10'd392 : 10'd120;
+    wire [9:0] ix1 = (rand_shift==0)?10'd800 : (rand_shift==1)?10'd800 : (rand_shift==2)?10'd160 : 10'd160;
+    wire [9:0] iy1 = (rand_shift==0)?10'd150 : (rand_shift==1)?10'd490 : (rand_shift==2)?10'd490 : 10'd150;
 
-    wire [9:0] ix2 = (rand_shift==0)?10'd650 : (rand_shift==1)?10'd150 : (rand_shift==2)?10'd150 : 10'd650;
-    wire [9:0] iy2 = (rand_shift==0)?10'd392 : (rand_shift==1)?10'd392 : (rand_shift==2)?10'd120 : 10'd120;
+    wire [9:0] ix2 = (rand_shift==0)?10'd800 : (rand_shift==1)?10'd160 : (rand_shift==2)?10'd160 : 10'd800;
+    wire [9:0] iy2 = (rand_shift==0)?10'd490 : (rand_shift==1)?10'd490 : (rand_shift==2)?10'd150 : 10'd150;
 
-    wire [9:0] ix3 = (rand_shift==0)?10'd150 : (rand_shift==1)?10'd150 : (rand_shift==2)?10'd650 : 10'd650;
-    wire [9:0] iy3 = (rand_shift==0)?10'd392 : (rand_shift==1)?10'd120 : (rand_shift==2)?10'd120 : 10'd392;
+    wire [9:0] ix3 = (rand_shift==0)?10'd160 : (rand_shift==1)?10'd160 : (rand_shift==2)?10'd800 : 10'd800;
+    wire [9:0] iy3 = (rand_shift==0)?10'd490 : (rand_shift==1)?10'd150 : (rand_shift==2)?10'd150 : 10'd490;
 
     wire [9:0] nx_l = px - step_size, nx_r = px + step_size, ny_u = py - step_size, ny_d = py + step_size;
     reg hit_l, hit_r, hit_u, hit_d;
@@ -109,10 +112,14 @@ module player (
     wire hit_b_u = hit_u;
     wire hit_b_d = hit_d;
 
+    // ระยะโจมตีบอสสมมาตรรอบจุดศูนย์กลาง (±65 px ตรงกับกรอบสีแดง)
+    wire boss_trig_zone = (dx_b <= 10'd70) && (dy_b <= 10'd70);
+    wire boss_hit_zone  = (dx_b <= 10'd65) && (dy_b <= 10'd65);
+
     always @(posedge clk) begin
         btn_s <= btn; b <= btn_s;
         if (rst) begin
-            px <= 10'd400; py <= 10'd450; 
+            px <= 10'd480; py <= 10'd540; 
             back <= 1'b0; mirror <= 1'b0; frames <= 3'd0;
             item_active <= 4'b1111; current_form <= 3'd0;
             
@@ -150,9 +157,10 @@ module player (
             m_x[15]<= ix3 - 75; m_y[15]<= iy3;
 
             player_max_hp <= 9'd100; player_hp <= 9'd100; game_won <= 1'b0;
+            boss_x <= 10'd480; boss_y <= 10'd320;
             boss_hp <= 17'd100000; boss_state <= 2'd0; boss_timer <= 8'd0; boss_dt <= 0;
             is_attacking <= 1'b0; attack_timer <= 5'd0;
-            minion_state <= 2'd0; minion_timer <= 8'd0; m_move_tick <= 1'b0;
+            minion_state <= 2'd0; minion_timer <= 8'd0; minion_active_atk <= 16'd0; m_move_tick <= 1'b0;
             
         end else if (tick) begin
             
@@ -163,18 +171,19 @@ module player (
             for (i=0; i<16; i=i+1) if (m_dt[i] > 0) m_dt[i] <= m_dt[i] - 1;
 
             if (!game_won) begin
+                // ขอบเขตการเดินสมมาตรจากจุดศูนย์กลางตัวละคร (ซ้าย/ขวา 52..908, บน/ล่าง 52..588)
                 if (player_hp > 0) begin 
-                    if (left  && px > 32  && !hit_b_l) begin px <= px - step_size; mirror <= 1'b0; end
-                    if (right && px < 768 && !hit_b_r) begin px <= px + step_size; mirror <= 1'b1; end 
-                    if (up    && py > 64  && !hit_b_u) begin py <= py - step_size; back   <= 1'b1; end
-                    if (down  && py < 480 && !hit_b_d) begin py <= py + step_size; back   <= 1'b0; end 
+                    if (left  && px > 52  && !hit_b_l) begin px <= px - step_size; mirror <= 1'b0; end
+                    if (right && px < 908 && !hit_b_r) begin px <= px + step_size; mirror <= 1'b1; end 
+                    if (up    && py > 52  && !hit_b_u) begin py <= py - step_size; back   <= 1'b1; end
+                    if (down  && py < 588 && !hit_b_d) begin py <= py + step_size; back   <= 1'b0; end 
                     frames <= moving ? frames + 1'b1 : 3'd0;
                 end
                 
-                cam_x <= (px < 160) ? 9'd0  : (px > 640) ? 9'd480  : px - 10'd160; 
-                cam_y <= (py < 120) ? 10'd0 : (py > 392) ? 10'd272 : py - 10'd120;
+                cam_x <= (px < 160) ? 10'd0 : (px > 10'd800) ? 10'd640 : px - 10'd160; 
+                cam_y <= (py < 120) ? 10'd0 : (py > 10'd520) ? 10'd400 : py - 10'd120;
 
-                // --- Minion Patrol around Barrier (Clockwise, 30 px/sec) ---
+                // --- Minion Patrol around Barrier (ทุกตัวหยุดเดินพร้อมกันเมื่อ minion_state != 0) ---
                 m_move_tick <= ~m_move_tick;
                 if (m_move_tick && minion_state == 2'd0) begin
                     for (i = 0; i < 16; i = i + 1) begin
@@ -191,11 +200,11 @@ module player (
                     end
                 end
 
-                // --- Player Attack (Slower cooldown: 20 frames) ---
+                // --- Player Attack ---
                 if (is_attacking) begin 
                     attack_timer <= attack_timer + 1'b1;
                     if (attack_timer == 5'd1) begin
-                        if (boss_hp > 0 && dx_b <= 10'd60 && dy_b <= 10'd60) begin 
+                        if (boss_hp > 0 && dx_b <= 10'd65 && dy_b <= 10'd65) begin 
                             if (boss_hp > p_dmg) boss_hp <= boss_hp - p_dmg; 
                             else begin boss_hp <= 0; boss_dt <= 6'd60; end 
                         end
@@ -215,13 +224,13 @@ module player (
                     is_attacking <= 1'b1; attack_timer <= 5'd0;
                 end
 
-                // --- Boss AI (Triggers only when player is near) ---
+                // --- Boss AI ---
                 if (boss_hp > 0) begin
                     case (boss_state)
                         2'd0: begin
                             if (boss_timer < 8'd30) begin
                                 boss_timer <= boss_timer + 1'b1;
-                            end else if (dx_b <= 10'd70 && dy_b <= 10'd70 && player_hp > 0) begin
+                            end else if (boss_trig_zone && player_hp > 0) begin
                                 boss_state <= 2'd1;
                                 boss_timer <= 8'd0;
                             end
@@ -232,7 +241,7 @@ module player (
                         end
                         2'd2: begin
                             boss_timer <= boss_timer + 1'b1;
-                            if (boss_timer == 8'd1 && dx_b <= 10'd60 && dy_b <= 10'd60 && player_hp > 0) begin
+                            if (boss_timer == 8'd1 && boss_hit_zone && player_hp > 0) begin
                                 if (player_hp > 9'd50) player_hp <= player_hp - 9'd50; else player_hp <= 9'd0;
                             end
                             if (boss_timer >= 8'd15) begin boss_state <= 2'd0; boss_timer <= 8'd0; end
@@ -240,23 +249,26 @@ module player (
                     endcase
                 end
 
-                // --- Minion AI (Triggers only when player is near any alive minion) ---
+                // --- Minion AI (สมมาตร ±20 px รอบจุดศูนย์กลาง ตรงกับกรอบสีแดง) ---
                 case (minion_state)
                     2'd0: begin
+                        minion_active_atk <= 16'd0;
                         if (minion_timer < 8'd30) begin
                             minion_timer <= minion_timer + 1'b1;
                         end else if (player_hp > 0) begin
-                            minion_near = 0;
+                            next_atk_mask = 16'd0;
                             for (i = 0; i < 16; i = i + 1) begin
                                 if (m_hp[i] > 0) begin
                                     dx_m = (px > m_x[i]) ? (px - m_x[i]) : (m_x[i] - px);
                                     dy_m = (py > m_y[i]) ? (py - m_y[i]) : (m_y[i] - py);
-                                    if (dx_m <= 50 && dy_m <= 50) minion_near = 1;
+                                    if (dx_m <= 24 && dy_m <= 24)
+                                        next_atk_mask[i] = 1'b1;
                                 end
                             end
-                            if (minion_near) begin
-                                minion_state <= 2'd1;
-                                minion_timer <= 8'd0;
+                            if (|next_atk_mask) begin
+                                minion_state      <= 2'd1;
+                                minion_timer      <= 8'd0;
+                                minion_active_atk <= next_atk_mask;
                             end
                         end
                     end
@@ -269,15 +281,20 @@ module player (
                         if (minion_timer == 8'd1 && player_hp > 0) begin
                             dmg_hit = 0;
                             for (i = 0; i < 16; i = i + 1) begin
-                                if (m_hp[i] > 0) begin
+                                if (m_hp[i] > 0 && minion_active_atk[i]) begin
                                     dx_m = (px > m_x[i]) ? (px - m_x[i]) : (m_x[i] - px);
                                     dy_m = (py > m_y[i]) ? (py - m_y[i]) : (m_y[i] - py);
-                                    if (dx_m <= 40 && dy_m <= 40) dmg_hit = 1;
+                                    if (dx_m <= 20 && dy_m <= 20)
+                                        dmg_hit = 1;
                                 end
                             end
                             if (dmg_hit) begin if (player_hp > 9'd20) player_hp <= player_hp - 9'd20; else player_hp <= 9'd0; end
                         end
-                        if (minion_timer >= 8'd15) begin minion_state <= 2'd0; minion_timer <= 8'd0; end
+                        if (minion_timer >= 8'd15) begin
+                            minion_state      <= 2'd0;
+                            minion_timer      <= 8'd0;
+                            minion_active_atk <= 16'd0;
+                        end
                     end
                 endcase
 

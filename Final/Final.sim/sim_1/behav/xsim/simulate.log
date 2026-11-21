@@ -1,20 +1,27 @@
 Time resolution is 1 ps
-==================================================
-   STARTING END-SCREEN SIMULATION (DIE & WIN)     
-==================================================
+=========================================================
+   STARTING 7-SCENE VISUAL VERIFICATION SIMULATION       
+=========================================================
 
---- [TEST 1] Simulating Player Death ---
-Player HP after boss hit = 0 (Expected: 0)
-[INFO] Saved VGA frame to screen_die.ppm
-[FAIL] Unexpected color on Death screen: top=000, rst=000
+[1/7] Capturing Spawn Screen...
+[SAVED] 1_spawn.ppm | px=480, py=540 | HP=100 | cam=(320,400)
 
---- [TEST 2] Pressing Reset & Simulating Boss Victory ---
-Game Won Flag = 1 (Expected: 1)
-[INFO] Saved VGA frame to screen_win.ppm
-[DIAG] Frame 27 non-zero sprite indices = 10492 (sample q_b = 0xff), visible RGB pixels = 8616
-[FAIL] Unexpected color on Victory screen: top=000, rst=000
+[2/7] Capturing Boss Attack at Exact Red-Border Edge...
+[SAVED] 2_boss_attack.ppm | px=545, py=320 | HP=50 | cam=(385,200)
 
-==================================================
-   SIMULATION COMPLETED SUCCESSFULLY!             
-==================================================
-$finish called at time : 24692280 ns : File "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sim_1/new/ending.v" Line 221
+[3/7] Capturing Left Wall Collision & Bottom-Left Minions...
+[SAVED] 3_left_edge_minions.ppm | px=52, py=490 | HP=50 | cam=(0,370)
+
+[4/7] Capturing Minion Patrol Movement...
+[SAVED] 4_minions_moved.ppm | px=52, py=490 | HP=50 | cam=(0,370)
+
+[5/7] Capturing Minion Attack at Exact Top Red-Border Edge...
+[SAVED] 5_minion_attack.ppm | px=852, py=395 | HP=30 | cam=(640,275)
+
+[6/7] Capturing Death Screen...
+[SAVED] 6_die.ppm | px=480, py=320 | HP=0 | cam=(320,200)
+
+[7/7] Capturing Victory Screen...
+[SAVED] 7_win.ppm | px=480, py=540 | HP=100 | cam=(320,400)
+$finish called at time : 86563320 ns : File "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sim_1/new/ending.v" Line 217
+INFO: xsimkernel Simulation Memory Usage: 42300 KB (Peak: 42300 KB), Simulation CPU Usage: 20327 ms

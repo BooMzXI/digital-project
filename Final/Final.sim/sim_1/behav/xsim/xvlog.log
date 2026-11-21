@@ -8,9 +8,9 @@ INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/dig
 INFO: [VRFC 10-311] analyzing module rom_1p
 INFO: [VRFC 10-311] analyzing module rom_lut
 INFO: [VRFC 10-311] analyzing module rom_2p
-INFO: [VRFC 10-311] analyzing module rom_map_800x512
+INFO: [VRFC 10-311] analyzing module rom_map_960x640
 INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/vga_render.v" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module vga_render
 INFO: [VRFC 10-311] analyzing module font_8x8
 INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sim_1/new/ending.v" into library xil_defaultlib
-INFO: [VRFC 10-311] analyzing module tb_end_screens
+INFO: [VRFC 10-311] analyzing module tb_full_check
