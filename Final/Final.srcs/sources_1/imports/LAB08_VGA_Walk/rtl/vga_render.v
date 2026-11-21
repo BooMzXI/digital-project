@@ -4,7 +4,7 @@ module vga_render (
     input  wire [9:0]  x, y,
     input  wire        hsync, vsync, video_on,
     input  wire [9:0]  px, py,
-    input  wire [8:0]  cam_x,
+    input  wire [9:0]  cam_x,
     input  wire [9:0]  cam_y,
     input  wire [4:0]  sprite_frame,
     input  wire        mirror,
@@ -20,6 +20,7 @@ module vga_render (
     input  wire [207:0] flat_minion_hp,
     
     input  wire [1:0]   minion_state,
+    input  wire [15:0]  minion_active_atk,
     input  wire [3:0]   barrier_active,
     input  wire         boss_dying,
     input  wire [15:0]  flat_minion_dying,
@@ -47,23 +48,26 @@ module vga_render (
     wire [8:0] gx = x[9:1], gy = y[9:1];
     wire [9:0] wx = cam_x + gx, wy = cam_y + gy;
 
-    // Banked ROM สำหรับ Map ขนาด 800 x 512
-    wire [18:0] map_addr = (wy * 19'd800) + wx;
-    wire [6:0] map_index; wire [11:0] map_color;
+    // Banked ROM สำหรับ Map ขนาด 960 x 640 (32 สี = 5-bit index)
+    wire [19:0] map_addr = (wy * 20'd960) + wx;
+    wire [4:0]  map_index;
+    wire [11:0] map_color;
     
-    rom_map_800x512 #(.DW(7), .FILE("map.mem")) u_map (
+    rom_map_960x640 #(.DW(5), .FILE("map.mem")) u_map (
         .clk(clk), 
         .addr(map_addr), 
         .q(map_index)
     );
-    rom_lut #(.DW(12), .AW(7), .FILE("map_pal.mem")) u_map_pal (.clk(clk), .addr(map_index), .q(map_color));
+    rom_lut #(.DW(12), .AW(5), .FILE("map_pal.mem")) u_map_pal (.clk(clk), .addr(map_index), .q(map_color));
 
+    // ตัวละครผู้เล่น 64x64 (จุดศูนย์กลางอยู่ที่ px, py -> ±32)
     wire signed [11:0] sx = $signed({2'b0, wx}) - $signed({2'b0, px}) + 12'sd32;
-    wire signed [11:0] sy = $signed({2'b0, wy}) - $signed({2'b0, py}) + 12'sd63;
+    wire signed [11:0] sy = $signed({2'b0, wy}) - $signed({2'b0, py}) + 12'sd32;
     wire        on_sprite = sx >= 0 && sx < 64 && sy >= 0 && sy < 64;
     wire [5:0]  col = mirror ? 6'd63 - sx[5:0] : sx[5:0];
     wire [16:0] sprite_addr = sprite_frame * 17'd4096 + {sy[5:0], 6'd0} + {1'b0, col};
 
+    // ไอเทม 64x64 (จุดศูนย์กลางอยู่ที่ item_x, item_y -> ±32)
     reg on_item = 0; reg [1:0] active_item_id = 0; reg [5:0] item_col = 0; reg [5:0] item_row = 0;
     integer i;
     always @(*) begin
@@ -77,29 +81,33 @@ module vga_render (
     wire [4:0] item_frame = 5'd20 + {3'b000, active_item_id}; 
     wire [16:0] item_addr = item_frame * 17'd4096 + {item_row, 6'd0} + {1'b0, item_col};
 
-    reg on_minion = 0; reg [5:0] mx_col = 0; reg [5:0] my_row = 0; reg minion_is_dying = 0;
+    // มอนสเตอร์ 32x32 (จุดศูนย์กลางอยู่ที่ m_x, m_y -> ±16)
+    reg on_minion = 0; reg [5:0] mx_col = 0; reg [5:0] my_row = 0; reg minion_is_dying = 0; reg minion_is_atk = 0;
     always @(*) begin
-        on_minion = 0; mx_col = 0; my_row = 0; minion_is_dying = 0;
+        on_minion = 0; mx_col = 0; my_row = 0; minion_is_dying = 0; minion_is_atk = 0;
         for (i = 0; i < 16; i = i + 1) begin
-            if ((m_hp[i] > 0 || m_dying[i]) && (wx >= (m_x[i] - 16)) && (wx < (m_x[i] + 16)) && (wy >= (m_y[i] - 31)) && (wy <= m_y[i])) begin
+            if ((m_hp[i] > 0 || m_dying[i]) && (wx >= (m_x[i] - 16)) && (wx < (m_x[i] + 16)) && (wy >= (m_y[i] - 16)) && (wy < (m_y[i] + 16))) begin
                 on_minion = 1'b1; 
                 mx_col = (wx - (m_x[i] - 16)) * 2; 
-                my_row = (wy - (m_y[i] - 31)) * 2;
+                my_row = (wy - (m_y[i] - 16)) * 2;
                 minion_is_dying = m_dying[i];
+                minion_is_atk   = minion_active_atk[i];
             end
         end
     end
-    wire [4:0] minion_frame = minion_is_dying ? 5'd26 : (5'd24 + {3'b000, minion_state});
+    wire [1:0] eff_minion_state = (minion_is_atk === 1'b1) ? minion_state : 2'd0;
+    wire [4:0] minion_frame = minion_is_dying ? 5'd26 : (5'd24 + {3'b000, eff_minion_state});
     wire [16:0] minion_addr = minion_frame * 17'd4096 + {my_row, 6'd0} + {1'b0, mx_col};
 
-    // เลื่อนรูปฉากชนะ (Frame 27) ลงมาหน่อยจาก y=176 เป็น y=196 (128x128 px)
+    // รูปฉากชนะ (Frame 28 -> index 27)
     wire signed [11:0] end_sx = $signed({2'b0, x}) - 12'sd256; 
     wire signed [11:0] end_sy = $signed({2'b0, y}) - 12'sd196; 
     wire on_end_sprite = game_won && (end_sx >= 0 && end_sx < 128 && end_sy >= 0 && end_sy < 128);
     wire [5:0] esx = end_sx[6:1], esy = end_sy[6:1];
 
+    // บอส 96x96 (จุดศูนย์กลางอยู่ที่ boss_x, boss_y -> ±48)
     wire signed [11:0] bsx_1_5x = $signed({2'b0, wx}) - $signed({2'b0, boss_x}) + 12'sd48; 
-    wire signed [11:0] bsy_1_5x = $signed({2'b0, wy}) - $signed({2'b0, boss_y}) + 12'sd95; 
+    wire signed [11:0] bsy_1_5x = $signed({2'b0, wy}) - $signed({2'b0, boss_y}) + 12'sd48; 
     wire on_boss = (boss_hp > 0 || boss_dying) && (bsx_1_5x >= 0 && bsx_1_5x < 96 && bsy_1_5x >= 0 && bsy_1_5x < 96);
     wire on_boss_eval = game_won ? on_end_sprite : on_boss;
     
@@ -143,25 +151,28 @@ module vga_render (
     end
     wire on_barrier = on_barrier_comb;
 
+    // หลอดเลือดผู้เล่น (ขอบบนรูปอยู่ที่ py-32 -> วางหลอดเลือดที่ py-40..py-38)
     wire [7:0] max_w = player_max_hp[8:1]; 
     wire [7:0] php_w = player_hp[8:1]; 
     wire [9:0] half_max_w = {2'b0, max_w[7:1]};
     wire [9:0] php_start = (px > half_max_w) ? (px - half_max_w) : 10'd0; 
     
-    wire on_php_bg = (wx >= php_start && wx < (php_start + max_w)) && (wy >= py - 72 && wy <= py - 70);
+    wire on_php_bg = (wx >= php_start && wx < (php_start + max_w)) && (wy >= py - 40 && wy <= py - 38);
     wire on_php_fg = on_php_bg && (wx < (php_start + php_w));
     
-    wire on_bhp_bg = (wx >= boss_x - 48 && wx <= boss_x + 48) && (wy >= boss_y - 110 && wy <= boss_y - 107); 
+    // หลอดเลือดบอส (ขอบบนรูปอยู่ที่ boss_y-48 -> วางหลอดเลือดที่ boss_y-62..boss_y-59)
+    wire on_bhp_bg = (wx >= boss_x - 48 && wx <= boss_x + 48) && (wy >= boss_y - 62 && wy <= boss_y - 59); 
     wire [6:0] bhp_w = boss_hp[16:10]; 
     wire on_bhp_fg = on_bhp_bg && (wx < (boss_x - 48 + bhp_w));
     
+    // หลอดเลือดมอน (ขอบบนรูปอยู่ที่ m_y-16 -> วางหลอดเลือดที่ m_y-24..m_y-22)
     reg on_mhp_bg_c = 0; reg on_mhp_fg_c = 0;
     reg [4:0] cur_mhp_w;
     always @(*) begin
         on_mhp_bg_c = 0; on_mhp_fg_c = 0;
         for (i = 0; i < 16; i = i + 1) begin
             if (m_hp[i] > 0) begin
-                if (wx >= m_x[i] - 15 && wx < m_x[i] + 15 && wy >= m_y[i] - 40 && wy <= m_y[i] - 38) begin
+                if (wx >= m_x[i] - 15 && wx < m_x[i] + 15 && wy >= m_y[i] - 24 && wy <= m_y[i] - 22) begin
                     on_mhp_bg_c = 1'b1;
                     if (i < 4) cur_mhp_w = m_hp[i] * 6;                     
                     else if (i < 8) cur_mhp_w = (m_hp[i] * 77) >> 7;        
@@ -175,19 +186,21 @@ module vga_render (
     wire on_mhp_bg = on_mhp_bg_c;
     wire on_mhp_fg = on_mhp_fg_c;
 
-    wire on_boss_warn = (boss_state == 2'd1) && (boss_hp > 0) && (
-        (wx >= boss_x - 55 && wx <= boss_x + 55 && (wy == boss_y - 100 || wy == boss_y + 10 || wy == boss_y - 99 || wy == boss_y + 9)) ||
-        (wy >= boss_y - 100 && wy <= boss_y + 10 && (wx == boss_x - 55 || wx == boss_x + 55 || wx == boss_x - 54 || wx == boss_x + 54))
+    // กรอบสีแดงระยะโจมตีบอสสมมาตร (±65 px รอบ boss_x, boss_y)
+    wire on_boss_warn = ((boss_state == 2'd1) || (boss_state == 2'd2)) && (boss_hp > 0) && (
+        (wx >= boss_x - 65 && wx <= boss_x + 65 && (wy == boss_y - 65 || wy == boss_y + 65 || wy == boss_y - 64 || wy == boss_y + 64)) ||
+        (wy >= boss_y - 65 && wy <= boss_y + 65 && (wx == boss_x - 65 || wx == boss_x + 65 || wx == boss_x - 64 || wx == boss_x + 64))
     );
     
+    // กรอบสีแดงระยะโจมตีมอนสมมาตร (±20 px รอบ m_x, m_y เฉพาะตัวที่กำลังโจมตี)
     reg on_minion_warn = 0;
     always @(*) begin
         on_minion_warn = 0;
-        if (minion_state == 2'd1) begin
+        if (minion_state == 2'd1 || minion_state == 2'd2) begin
             for (i = 0; i < 16; i = i + 1) begin
-                if (m_hp[i] > 0) begin
-                    if ((wx >= m_x[i] - 20 && wx <= m_x[i] + 20 && (wy == m_y[i] - 35 || wy == m_y[i] + 5 || wy == m_y[i] - 34 || wy == m_y[i] + 4)) ||
-                        (wy >= m_y[i] - 35 && wy <= m_y[i] + 5 && (wx == m_x[i] - 20 || wx == m_x[i] + 20 || wx == m_x[i] - 19 || wx == m_x[i] + 19))) begin
+                if (m_hp[i] > 0 && (minion_active_atk[i] === 1'b1)) begin
+                    if ((wx >= m_x[i] - 20 && wx <= m_x[i] + 20 && (wy == m_y[i] - 20 || wy == m_y[i] + 20 || wy == m_y[i] - 19 || wy == m_y[i] + 19)) ||
+                        (wy >= m_y[i] - 20 && wy <= m_y[i] + 20 && (wx == m_x[i] - 20 || wx == m_x[i] + 20 || wx == m_x[i] - 19 || wx == m_x[i] + 19))) begin
                         on_minion_warn = 1'b1;
                     end
                 end
@@ -195,10 +208,7 @@ module vga_render (
         end
     end
 
-    // =========================================================================
-    // ระบบแสดงข้อความพิกเซลสำหรับฉากจบ (YOU RECIVE / YOU DIE / PRESS RESET TO RESTART)
-    // =========================================================================
-    // 1) "YOU RECIVE" (10 ตัวอักษร, ขนาดตัวละ 32x32 px -> กว้าง 320 px, กึ่งกลางจอ x=160..479, y=110..141)
+    // ข้อความฉากจบ (YOU RECIVE / YOU DIE / PRESS RESET TO RESTART)
     wire in_win_box = (x >= 10'd160 && x < 10'd480) && (y >= 10'd110 && y < 10'd142);
     wire [9:0] win_dx = x - 10'd160;
     wire [9:0] win_dy = y - 10'd110;
@@ -222,7 +232,6 @@ module vga_render (
     font_8x8 u_font_win (.char_code(win_char), .row(win_dy[4:2]), .col(win_dx[4:2]), .pixel_on(win_px));
     wire on_win_text = in_win_box && win_px;
 
-    // 2) "YOU DIE" (7 ตัวอักษร, ขนาดตัวละ 64x64 px -> กว้าง 448 px, กึ่งกลางจอ x=96..543, y=180..243)
     wire in_die_box = (x >= 10'd96 && x < 10'd544) && (y >= 10'd180 && y < 10'd244);
     wire [9:0] die_dx = x - 10'd96;
     wire [9:0] die_dy = y - 10'd180;
@@ -243,14 +252,13 @@ module vga_render (
     font_8x8 u_font_die (.char_code(die_char), .row(die_dy[5:3]), .col(die_dx[5:3]), .pixel_on(die_px));
     wire on_die_text = in_die_box && die_px;
 
-    // 3) "PRESS RESET TO RESTART" (22 ตัวอักษร, ขนาดตัวละ 24x24 px -> กว้าง 528 px, กึ่งกลางจอ x=56..583, y=376..399)
     wire in_rst_box = (x >= 10'd56 && x < 10'd584) && (y >= 10'd376 && y < 10'd400);
     wire [9:0] rst_dx = x - 10'd56;
     wire [9:0] rst_dy = y - 10'd376;
     wire [20:0] rst_dx_mul = rst_dx * 12'd683;
-    wire [7:0]  rst_dx_d3  = rst_dx_mul[18:11]; // หาร 3 แบบแม่นยำ (0..175)
+    wire [7:0]  rst_dx_d3  = rst_dx_mul[18:11];
     wire [12:0] rst_dy_mul = rst_dy * 8'd86;
-    wire [2:0]  rst_row    = rst_dy_mul[10:8];  // หาร 3 แบบแม่นยำ (0..7)
+    wire [2:0]  rst_row    = rst_dy_mul[10:8];
     reg [7:0] rst_char;
     always @(*) begin
         case (rst_dx_d3[7:3])
@@ -283,9 +291,6 @@ module vga_render (
     font_8x8 u_font_rst (.char_code(rst_char), .row(rst_row), .col(rst_dx_d3[2:0]), .pixel_on(rst_px));
     wire on_restart_text = in_rst_box && rst_px;
     
-    // =========================================================================
-    // Pipeline 2 จังหวะ ให้ตรงกับ Latency ของ ROM
-    // =========================================================================
     reg on_player_1=0, on_boss_1=0, on_minion_1=0, on_item_1=0;
     reg see_player_2=0, see_boss_2=0, see_minion_2=0, see_item_2=0;
     reg on_bar_1=0, on_bar_2=0, on_warn_1=0, on_warn_2=0;
@@ -353,9 +358,6 @@ module vga_render (
     end
 endmodule
 
-// ============================================================================
-// ตารางฟอนต์ 8x8 แบบ Combinational (ไม่ใช้ BRAM)
-// ============================================================================
 module font_8x8 (
     input  wire [7:0] char_code,
     input  wire [2:0] row,

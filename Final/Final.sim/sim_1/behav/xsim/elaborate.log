@@ -1,7 +1,7 @@
 Vivado Simulator v2024.2.0
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
-Running: C:/Xilinx/Vivado/2024.2/bin/unwrapped/win64.o/xelab.exe --incr --debug typical --relax --mt 2 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip --snapshot tb_end_screens_behav xil_defaultlib.tb_end_screens xil_defaultlib.glbl -log elaborate.log 
+Running: C:/Xilinx/Vivado/2024.2/bin/unwrapped/win64.o/xelab.exe --incr --debug typical --relax --mt 2 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip --snapshot tb_full_check_behav xil_defaultlib.tb_full_check xil_defaultlib.glbl -log elaborate.log 
 Using 2 slave threads.
 Starting static elaboration
 Pass Through NonSizing Optimizer
@@ -12,12 +12,12 @@ Time Resolution for simulation is 1ps
 Compiling module xil_defaultlib.player
 Compiling module xil_defaultlib.dffe_aclr
 Compiling module xil_defaultlib.walk_fsm
-Compiling module xil_defaultlib.rom_map_800x512(FILE="map.mem")
-Compiling module xil_defaultlib.rom_lut(AW=7,FILE="map_pal.mem")
+Compiling module xil_defaultlib.rom_map_960x640(FILE="map.mem")
+Compiling module xil_defaultlib.rom_lut(AW=5,FILE="map_pal.mem")
 Compiling module xil_defaultlib.rom_2p(FILE="sprite.mem")
 Compiling module xil_defaultlib.rom_lut(FILE="spr_pal.mem")
 Compiling module xil_defaultlib.font_8x8
 Compiling module xil_defaultlib.vga_render
-Compiling module xil_defaultlib.tb_end_screens
+Compiling module xil_defaultlib.tb_full_check
 Compiling module xil_defaultlib.glbl
-Built simulation snapshot tb_end_screens_behav
+Built simulation snapshot tb_full_check_behav

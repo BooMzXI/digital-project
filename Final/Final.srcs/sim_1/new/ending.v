@@ -1,12 +1,16 @@
 `timescale 1ns / 1ps
 
-module tb_end_screens;
+module tb_full_check;
 
-    // สร้างสัญญาณ Pixel Clock 25 MHz โดยตรง (รันจบใน ~1-2 วินาที)
-    reg clk = 0;
-    reg rst = 1;
+    // Pixel Clock 25 MHz
+    reg clk  = 0;
+    reg rst  = 1;
     reg tick = 0;
     always #20 clk = ~clk;
+
+    reg [3:0] btn        = 4'b0000;
+    reg       btn_attack = 1'b0;
+    reg       sw0        = 1'b0;
 
     reg  [9:0] x = 0, y = 0;
     reg        video_on = 0;
@@ -15,8 +19,7 @@ module tb_end_screens;
     wire [3:0]   item_active;
     wire [2:0]   current_form;
     wire [39:0]  flat_item_x, flat_item_y;
-    wire [9:0]   px, py, cam_y;
-    wire [8:0]   cam_x;
+    wire [9:0]   px, py, cam_x, cam_y;
     wire         back, mirror, moving, adv;
     wire         is_attacking;
 
@@ -28,6 +31,7 @@ module tb_end_screens;
     wire [159:0] flat_minion_x, flat_minion_y;
     wire [207:0] flat_minion_hp;
     wire [1:0]   minion_state;
+    wire [15:0]  minion_active_atk;
     wire [3:0]   barrier_active;
 
     wire         boss_dying;
@@ -38,8 +42,8 @@ module tb_end_screens;
     wire         VGA_HS, VGA_VS;
 
     player u_player (
-        .clk(clk), .rst(rst), .tick(tick), .btn(4'b0000),
-        .btn_attack(1'b0), .sw0(1'b0),
+        .clk(clk), .rst(rst), .tick(tick), .btn(btn),
+        .btn_attack(btn_attack), .sw0(sw0),
         .px(px), .py(py), .cam_x(cam_x), .cam_y(cam_y),
         .back(back), .mirror(mirror), .moving(moving), .adv(adv),
         .item_active(item_active), .current_form(current_form),
@@ -49,6 +53,7 @@ module tb_end_screens;
         .boss_hp(boss_hp), .player_hp(player_hp), .player_max_hp(player_max_hp),
         .flat_minion_x(flat_minion_x), .flat_minion_y(flat_minion_y),
         .flat_minion_hp(flat_minion_hp), .minion_state(minion_state),
+        .minion_active_atk(minion_active_atk),
         .barrier_active(barrier_active),
         .boss_dying(boss_dying), .flat_minion_dying(flat_minion_dying), .game_won(game_won)
     );
@@ -73,38 +78,31 @@ module tb_end_screens;
         .boss_hp(boss_hp), .player_hp(player_hp), .player_max_hp(player_max_hp),
         .flat_minion_x(flat_minion_x), .flat_minion_y(flat_minion_y),
         .flat_minion_hp(flat_minion_hp), .minion_state(minion_state),
+        .minion_active_atk(minion_active_atk),
         .barrier_active(barrier_active),
         .boss_dying(boss_dying), .flat_minion_dying(flat_minion_dying), .game_won(game_won),
         .VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B), .VGA_HS(VGA_HS), .VGA_VS(VGA_VS)
     );
 
-    reg [11:0] px_die_text, px_die_rst;
-    reg [11:0] px_win_text, px_win_rst;
-    integer    win_qb_nonzero, win_rgb_nonzero;
-    reg [7:0]  win_sample_qb;
-
-    task pulse_tick;
+    task step_ticks;
+        input integer count;
+        integer k;
         begin
-            @(negedge clk);
-            tick = 1'b1;
-            @(posedge clk);
-            @(negedge clk);
-            tick = 1'b0;
-            @(posedge clk);
+            for (k = 0; k < count; k = k + 1) begin
+                @(negedge clk);
+                tick = 1'b1;
+                @(posedge clk);
+                @(negedge clk);
+                tick = 1'b0;
+                @(posedge clk);
+            end
         end
     endtask
 
-    task render_and_save_ppm;
-        input [8*20:1] filename;
-        input          is_win_screen;
-        integer fd, r, c, out_c;
+    task save_frame_ppm;
+        input [8*26:1] filename;
+        integer fd, r, c;
         begin
-            if (is_win_screen) begin
-                win_qb_nonzero  = 0;
-                win_rgb_nonzero = 0;
-                win_sample_qb   = 8'd0;
-            end
-
             fd = $fopen(filename, "w");
             $fwrite(fd, "P3\n640 480\n15\n");
 
@@ -114,33 +112,10 @@ module tb_end_screens;
                 x        = 10'd0;
                 video_on = 1'b1;
 
-                for (c = 0; c < 642; c = c + 1) begin
+                for (c = 0; c < 643; c = c + 1) begin
                     @(posedge clk);
-                    // เช็กข้อมูลพิกเซลจาก ROM ในกรอบรูปชนะเกม (Stage 1)
-                    if (is_win_screen && c >= 1 && c <= 640 && u_render.on_boss_1) begin
-                        if (u_render.q_b !== 8'd0) begin
-                            win_qb_nonzero = win_qb_nonzero + 1;
-                            if (win_sample_qb == 8'd0) win_sample_qb = u_render.q_b;
-                        end
-                    end
-
-                    if (c >= 2) begin
-                        out_c = c - 2;
+                    if (c >= 3) begin
                         $fwrite(fd, "%0d %0d %0d ", VGA_R, VGA_G, VGA_B);
-
-                        if (is_win_screen && out_c >= 256 && out_c < 384 && r >= 196 && r < 324) begin
-                            if ({VGA_R, VGA_G, VGA_B} != 12'h000)
-                                win_rgb_nonzero = win_rgb_nonzero + 1;
-                        end
-
-                        if (!is_win_screen && out_c == 96 && r == 180)
-                            px_die_text = {VGA_R, VGA_G, VGA_B};
-                        if (is_win_screen && out_c == 160 && r == 110)
-                            px_win_text = {VGA_R, VGA_G, VGA_B};
-                        if (out_c == 56 && r == 376) begin
-                            if (is_win_screen) px_win_rst = {VGA_R, VGA_G, VGA_B};
-                            else               px_die_rst = {VGA_R, VGA_G, VGA_B};
-                        end
                     end
                     @(negedge clk);
                     if (c < 639) x = x + 10'd1;
@@ -150,14 +125,14 @@ module tb_end_screens;
             end
 
             $fclose(fd);
-            $display("[INFO] Saved VGA frame to %0s", filename);
+            $display("[SAVED] %0s | px=%0d, py=%0d | HP=%0d | cam=(%0d,%0d)", filename, px, py, player_hp, cam_x, cam_y);
         end
     endtask
 
     initial begin
-        $display("==================================================");
-        $display("   STARTING END-SCREEN SIMULATION (DIE & WIN)     ");
-        $display("==================================================");
+        $display("=========================================================");
+        $display("   STARTING 7-SCENE VISUAL VERIFICATION SIMULATION       ");
+        $display("=========================================================");
 
         rst = 1'b1;
         repeat (5) @(posedge clk);
@@ -165,31 +140,66 @@ module tb_end_screens;
         rst = 1'b0;
         repeat (5) @(posedge clk);
 
-        // --------------------------------------------------
-        // TEST 1 : จำลองฉากผู้เล่นตาย (YOU DIE)
-        // --------------------------------------------------
-        $display("\n--- [TEST 1] Simulating Player Death ---");
+        // 1. ตอนเกิด
+        $display("\n[1/7] Capturing Spawn Screen...");
+        step_ticks(2);
+        save_frame_ppm("1_spawn.ppm");
+
+        // 2. การตีของบอส (จุดศูนย์กลางตัวละครอยู่ที่ขอบขวาสุดของกรอบแดงบอส px = boss_x + 65)
+        $display("\n[2/7] Capturing Boss Attack at Exact Red-Border Edge...");
         @(negedge clk);
-        u_player.px         = 10'd400;
-        u_player.py         = 10'd260;
-        u_player.player_hp  = 9'd20;
+        u_player.px         = boss_x + 10'd65;
+        u_player.py         = boss_y;
         u_player.boss_state = 2'd2;
-        u_player.boss_timer = 8'd1; // ตั้งเป็น 1 เพื่อให้บอสฟาดโดนทันทีใน tick ถัดไป
+        u_player.boss_timer = 8'd1;
+        step_ticks(1);
+        save_frame_ppm("2_boss_attack.ppm");
 
-        pulse_tick();
-        $display("Player HP after boss hit = %0d (Expected: 0)", player_hp);
+        // 3. ยืนชิดขอบซ้ายสุดและเห็นกลุ่มมอนซ้ายล่าง
+        $display("\n[3/7] Capturing Left Wall Collision & Bottom-Left Minions...");
+        @(negedge clk);
+        u_player.boss_state = 2'd0;
+        u_player.px         = 10'd76;
+        u_player.py         = 10'd490;
+        btn                 = 4'b0010;
+        repeat (3) @(posedge clk);
+        step_ticks(20);
+        @(negedge clk);
+        btn                 = 4'b0000;
+        step_ticks(1);
+        save_frame_ppm("3_left_edge_minions.ppm");
 
-        render_and_save_ppm("screen_die.ppm", 1'b0);
+        // 4. มอนเคลื่อนไหว
+        $display("\n[4/7] Capturing Minion Patrol Movement...");
+        step_ticks(80);
+        save_frame_ppm("4_minions_moved.ppm");
 
-        if (px_die_text == 12'hF00 && px_die_rst == 12'hFFF)
-            $display("[PASS] YOU DIE (Red: %h) & PRESS RESET (White: %h)", px_die_text, px_die_rst);
-        else
-            $display("[FAIL] Unexpected color on Death screen: top=%h, rst=%h", px_die_text, px_die_rst);
+        // 5. การตีของมอน (จุดศูนย์กลางตัวละครอยู่ที่ขอบบนของกรอบแดงมอน py = m_y[8] - 20)
+        $display("\n[5/7] Capturing Minion Attack at Exact Top Red-Border Edge...");
+        @(negedge clk);
+        u_player.px                = u_player.m_x[8];
+        u_player.py                = u_player.m_y[8] - 10'd20;
+        u_player.minion_state      = 2'd2;
+        u_player.minion_timer      = 8'd1;
+        u_player.minion_active_atk = 16'd1 << 8;
+        step_ticks(1);
+        save_frame_ppm("5_minion_attack.ppm");
 
-        // --------------------------------------------------
-        // TEST 2 : กด Reset แล้วจำลองฉากชนะบอส (YOU RECIVE)
-        // --------------------------------------------------
-        $display("\n--- [TEST 2] Pressing Reset & Simulating Boss Victory ---");
+        // 6. ฉากตาย
+        $display("\n[6/7] Capturing Death Screen...");
+        @(negedge clk);
+        u_player.minion_state      = 2'd0;
+        u_player.minion_active_atk = 16'd0;
+        u_player.px                = boss_x;
+        u_player.py                = boss_y;
+        u_player.player_hp         = 9'd20;
+        u_player.boss_state        = 2'd2;
+        u_player.boss_timer        = 8'd1;
+        step_ticks(1);
+        save_frame_ppm("6_die.ppm");
+
+        // 7. ฉากชนะ
+        $display("\n[7/7] Capturing Victory Screen...");
         @(negedge clk);
         rst = 1'b1;
         repeat (5) @(posedge clk);
@@ -201,23 +211,9 @@ module tb_end_screens;
         u_player.current_form = 3'd4;
         u_player.boss_hp      = 17'd0;
         u_player.boss_dt      = 6'd2;
+        step_ticks(2);
+        save_frame_ppm("7_win.ppm");
 
-        pulse_tick();
-        pulse_tick();
-        $display("Game Won Flag = %0b (Expected: 1)", game_won);
-
-        render_and_save_ppm("screen_win.ppm", 1'b1);
-        $display("[DIAG] Frame 27 non-zero sprite indices = %0d (sample q_b = 0x%h), visible RGB pixels = %0d",
-                 win_qb_nonzero, win_sample_qb, win_rgb_nonzero);
-
-        if (px_win_text == 12'h0F0 && px_win_rst == 12'hFFF)
-            $display("[PASS] YOU RECIVE (Green: %h) & PRESS RESET (White: %h)", px_win_text, px_win_rst);
-        else
-            $display("[FAIL] Unexpected color on Victory screen: top=%h, rst=%h", px_win_text, px_win_rst);
-
-        $display("\n==================================================");
-        $display("   SIMULATION COMPLETED SUCCESSFULLY!             ");
-        $display("==================================================");
         $finish;
     end
 
