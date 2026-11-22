@@ -1,16 +1,25 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/boss_ctrl.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module boss_ctrl
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/font_8x8.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module font_8x8
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/item_ctrl.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module item_ctrl
 INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/lab08.v" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module vga_sync
 INFO: [VRFC 10-311] analyzing module dffe_aclr
 INFO: [VRFC 10-311] analyzing module walk_fsm
-INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/player.v" into library xil_defaultlib
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/minion_ctrl.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module minion_ctrl
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/player.v" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module player
-INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/roms.v" into library xil_defaultlib
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/roms.v" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module rom_1p
 INFO: [VRFC 10-311] analyzing module rom_lut
 INFO: [VRFC 10-311] analyzing module rom_2p
 INFO: [VRFC 10-311] analyzing module rom_map_960x640
-INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/vga_render.v" into library xil_defaultlib
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/vga_render.v" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module vga_render
-INFO: [VRFC 10-311] analyzing module font_8x8
-INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sim_1/new/ending.v" into library xil_defaultlib
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sim_1/imports/fpga_rpg_modular_v/tb_full_check.v" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module tb_full_check
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.sim/sim_1/behav/xsim/glbl.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module glbl
