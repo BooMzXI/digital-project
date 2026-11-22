@@ -79,13 +79,20 @@ read_mem {
   C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/mem/spr_pal.mem
 }
 read_verilog -library xil_defaultlib {
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/boss_ctrl.v
   C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/clk_gen.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/font_8x8.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/game_graphics.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/game_logic.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/game_timer.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/item_ctrl.v
   C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/lab08.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/minion_ctrl.v
   C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/Lab06/mod10_jk.v
-  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/player.v
-  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/roms.v
-  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/vga_render.v
-  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/lab08_top.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/player.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/roms.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/vga_render.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/lab08_top.v
 }
 OPTRACE "Adding files" END { }
 # Mark all dcp files as not used in implementation to prevent them from being

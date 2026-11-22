@@ -1,6 +1,6 @@
 Time resolution is 1 ps
 =========================================================
-   STARTING 7-SCENE VISUAL VERIFICATION SIMULATION       
+   STARTING 7-SCENE MODULAR VERIFICATION SIMULATION      
 =========================================================
 
 [1/7] Capturing Spawn Screen...
@@ -16,12 +16,12 @@ Time resolution is 1 ps
 [SAVED] 4_minions_moved.ppm | px=52, py=490 | HP=50 | cam=(0,370)
 
 [5/7] Capturing Minion Attack at Exact Top Red-Border Edge...
-[SAVED] 5_minion_attack.ppm | px=852, py=395 | HP=30 | cam=(640,275)
+[SAVED] 5_minion_attack.ppm | px=800, py=55 | HP=30 | cam=(640,0)
 
 [6/7] Capturing Death Screen...
 [SAVED] 6_die.ppm | px=480, py=320 | HP=0 | cam=(320,200)
 
 [7/7] Capturing Victory Screen...
 [SAVED] 7_win.ppm | px=480, py=540 | HP=100 | cam=(320,400)
-$finish called at time : 86563320 ns : File "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sim_1/new/ending.v" Line 217
-INFO: xsimkernel Simulation Memory Usage: 42300 KB (Peak: 42300 KB), Simulation CPU Usage: 20327 ms
+$finish called at time : 86563320 ns : File "C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sim_1/imports/fpga_rpg_modular_v/tb_full_check.v" Line 257
+INFO: xsimkernel Simulation Memory Usage: 41452 KB (Peak: 41452 KB), Simulation CPU Usage: 15561 ms
