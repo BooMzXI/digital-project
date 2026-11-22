@@ -1,24 +1,24 @@
 `timescale 1ns / 1ps
 // ============================================================================
-//  VGA Graphics Renderer & 3-Stage Priority Overlay Pipeline
+//  VGA Coordinate Mapper, Address Generators & 3-Stage Overlay Pipeline
 // ============================================================================
 module vga_render (
-    input  wire        clk,
-    input  wire [9:0]  x, y,
-    input  wire        hsync, vsync, video_on,
-    input  wire [9:0]  px, py,
-    input  wire [9:0]  cam_x,
-    input  wire [9:0]  cam_y,
-    input  wire [4:0]  sprite_frame,
-    input  wire        mirror,
-    input  wire [3:0]  item_active,
-    input  wire [2:0]  current_form,
-    input  wire [39:0] flat_item_x, flat_item_y,
-    input  wire [9:0]  boss_x, boss_y,
-    input  wire [1:0]  boss_state,
+    input  wire         clk,
+    input  wire [9:0]   x, y,
+    input  wire         hsync, vsync, video_on,
+    input  wire [9:0]   px, py,
+    input  wire [9:0]   cam_x,
+    input  wire [9:0]   cam_y,
+    input  wire [4:0]   sprite_frame,
+    input  wire         mirror,
+    input  wire [3:0]   item_active,
+    input  wire [2:0]   current_form,
+    input  wire [39:0]  flat_item_x, flat_item_y,
+    input  wire [9:0]   boss_x, boss_y,
+    input  wire [1:0]   boss_state,
     
-    input  wire [16:0] boss_hp, 
-    input  wire [8:0]  player_hp, player_max_hp,
+    input  wire [16:0]  boss_hp, 
+    input  wire [8:0]   player_hp, player_max_hp,
     input  wire [159:0] flat_minion_x, flat_minion_y,
     input  wire [207:0] flat_minion_hp,
     
@@ -28,9 +28,30 @@ module vga_render (
     input  wire         boss_dying,
     input  wire [15:0]  flat_minion_dying,
     input  wire         game_won,
+
+    // External Memory Interface (Connected inside game_graphics)
+    output wire [19:0]  map_addr,
+    input  wire [11:0]  map_color,
+    output wire [16:0]  addr_a,
+    input  wire [7:0]   q_a,
+    input  wire [11:0]  color_a,
+    output wire [16:0]  addr_b,
+    input  wire [7:0]   q_b,
+    input  wire [11:0]  color_b,
+
+    // External Font ROM Interface
+    output reg  [7:0]   win_char,
+    output wire [2:0]   win_row, win_col,
+    input  wire         win_px,
+    output reg  [7:0]   die_char,
+    output wire [2:0]   die_row, die_col,
+    input  wire         die_px,
+    output reg  [7:0]   rst_char,
+    output wire [2:0]   rst_row, rst_col,
+    input  wire         rst_px,
     
-    output reg  [3:0]  VGA_R = 0, VGA_G = 0, VGA_B = 0,
-    output reg         VGA_HS = 1, VGA_VS = 1
+    output reg  [3:0]   VGA_R = 0, VGA_G = 0, VGA_B = 0,
+    output reg          VGA_HS = 1, VGA_VS = 1
 );
     wire [9:0] item_x [0:3], item_y [0:3], m_x [0:15], m_y [0:15];
     wire [12:0] m_hp [0:15]; wire m_dying [0:15];
@@ -51,17 +72,8 @@ module vga_render (
     wire [8:0] gx = x[9:1], gy = y[9:1];
     wire [9:0] wx = cam_x + gx, wy = cam_y + gy;
 
-    // Banked ROM for 960x640 Map (32 colors = 5-bit index)
-    wire [19:0] map_addr = (wy * 20'd960) + wx;
-    wire [4:0]  map_index;
-    wire [11:0] map_color;
-    
-    rom_map_960x640 #(.DW(5), .FILE("map.mem")) u_map (
-        .clk(clk), 
-        .addr(map_addr), 
-        .q(map_index)
-    );
-    rom_lut #(.DW(12), .AW(5), .FILE("map_pal.mem")) u_map_pal (.clk(clk), .addr(map_index), .q(map_color));
+    // Map Address (960x640)
+    assign map_addr = (wy * 20'd960) + wx;
 
     // Player 64x64 (Center-aligned at px, py -> ±32)
     wire signed [11:0] sx = $signed({2'b0, wx}) - $signed({2'b0, px}) + 12'sd32;
@@ -122,23 +134,10 @@ module vga_render (
     wire [4:0] boss_frame = boss_dying ? 5'd26 : (5'd24 + {3'b000, boss_state});
     wire [16:0] boss_addr = game_won ? (5'd27 * 17'd4096 + {esy, 6'd0} + {1'b0, esx}) : (boss_frame * 17'd4096 + {bsy, 6'd0} + {1'b0, bsx});
 
-    wire [16:0] addr_a = sprite_addr;
-    wire [7:0]  q_a;
-    
-    wire [16:0] addr_b = on_boss_eval ? boss_addr   :
-                         on_minion    ? minion_addr :
-                         on_item      ? item_addr   : 17'd0;
-    wire [7:0]  q_b;
-    
-    rom_2p #(.DW(8), .AW(17), .DEPTH(114688), .FILE("sprite.mem")) u_master_sprite (
-        .clk(clk),
-        .addr_a(addr_a), .q_a(q_a),
-        .addr_b(addr_b), .q_b(q_b)
-    );
-
-    wire [11:0] color_a, color_b;
-    rom_lut #(.DW(12), .AW(8), .FILE("spr_pal.mem")) u_pal_a (.clk(clk), .addr(q_a), .q(color_a));
-    rom_lut #(.DW(12), .AW(8), .FILE("spr_pal.mem")) u_pal_b (.clk(clk), .addr(q_b), .q(color_b));
+    assign addr_a = sprite_addr;
+    assign addr_b = on_boss_eval ? boss_addr   :
+                    on_minion    ? minion_addr :
+                    on_item      ? item_addr   : 17'd0;
 
     reg on_barrier_comb;
     always @(*) begin
@@ -209,11 +208,12 @@ module vga_render (
         end
     end
 
-    // End Screen Text Overlays (Uses external font_8x8 module)
+    // End Screen Text Address & Character Selection
     wire in_win_box = (x >= 10'd160 && x < 10'd480) && (y >= 10'd110 && y < 10'd142);
     wire [9:0] win_dx = x - 10'd160;
     wire [9:0] win_dy = y - 10'd110;
-    reg [7:0] win_char;
+    assign win_row = win_dy[4:2];
+    assign win_col = win_dx[4:2];
     always @(*) begin
         case (win_dx[8:5])
             4'd0: win_char = "Y";
@@ -229,14 +229,13 @@ module vga_render (
             default: win_char = " ";
         endcase
     end
-    wire win_px;
-    font_8x8 u_font_win (.char_code(win_char), .row(win_dy[4:2]), .col(win_dx[4:2]), .pixel_on(win_px));
     wire on_win_text = in_win_box && win_px;
 
     wire in_die_box = (x >= 10'd96 && x < 10'd544) && (y >= 10'd180 && y < 10'd244);
     wire [9:0] die_dx = x - 10'd96;
     wire [9:0] die_dy = y - 10'd180;
-    reg [7:0] die_char;
+    assign die_row = die_dy[5:3];
+    assign die_col = die_dx[5:3];
     always @(*) begin
         case (die_dx[8:6])
             3'd0: die_char = "Y";
@@ -249,8 +248,6 @@ module vga_render (
             default: die_char = " ";
         endcase
     end
-    wire die_px;
-    font_8x8 u_font_die (.char_code(die_char), .row(die_dy[5:3]), .col(die_dx[5:3]), .pixel_on(die_px));
     wire on_die_text = in_die_box && die_px;
 
     wire in_rst_box = (x >= 10'd56 && x < 10'd584) && (y >= 10'd376 && y < 10'd400);
@@ -259,8 +256,8 @@ module vga_render (
     wire [20:0] rst_dx_mul = rst_dx * 12'd683;
     wire [7:0]  rst_dx_d3  = rst_dx_mul[18:11];
     wire [12:0] rst_dy_mul = rst_dy * 8'd86;
-    wire [2:0]  rst_row    = rst_dy_mul[10:8];
-    reg [7:0] rst_char;
+    assign rst_row = rst_dy_mul[10:8];
+    assign rst_col = rst_dx_d3[2:0];
     always @(*) begin
         case (rst_dx_d3[7:3])
             5'd0:  rst_char = "P";
@@ -288,8 +285,6 @@ module vga_render (
             default: rst_char = " ";
         endcase
     end
-    wire rst_px;
-    font_8x8 u_font_rst (.char_code(rst_char), .row(rst_row), .col(rst_dx_d3[2:0]), .pixel_on(rst_px));
     wire on_restart_text = in_rst_box && rst_px;
     
     // 3-Stage Pipeline Registers

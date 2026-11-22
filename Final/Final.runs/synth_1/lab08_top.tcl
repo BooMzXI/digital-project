@@ -56,7 +56,6 @@ if {$::dispatch::connected} {
 }
 
 OPTRACE "synth_1" START { ROLLUP_AUTO }
-set_msg_config -id {HDL-1065} -limit 10000
 OPTRACE "Creating in-memory project" START { }
 create_project -in_memory -part xc7a100tcsg324-1
 
@@ -80,18 +79,20 @@ read_mem {
   C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/mem/spr_pal.mem
 }
 read_verilog -library xil_defaultlib {
-  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/boss_ctrl.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/boss_ctrl.v
   C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/clk_gen.v
-  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/font_8x8.v
-  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/game_timer.v
-  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/item_ctrl.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/font_8x8.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/game_graphics.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/game_logic.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/game_timer.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/item_ctrl.v
   C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/LAB08_VGA_Walk/rtl/lab08.v
-  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/minion_ctrl.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/minion_ctrl.v
   C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/Lab06/mod10_jk.v
-  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/player.v
-  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/roms.v
-  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/vga_render.v
-  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular_v/lab08_top.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/player.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/roms.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/vga_render.v
+  C:/Users/phure/Documents/GitHub/digital-project/Final/Final.srcs/sources_1/imports/fpga_rpg_modular-v2/lab08_top.v
 }
 OPTRACE "Adding files" END { }
 # Mark all dcp files as not used in implementation to prevent them from being

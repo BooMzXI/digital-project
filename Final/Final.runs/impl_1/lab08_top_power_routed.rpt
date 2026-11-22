@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2024.2 (win64) Build 5239630 Fri Nov 08 22:35:27 MST 2024
-| Date             : Sun Nov 22 21:41:09 2026
+| Date             : Sun Nov 22 21:53:42 2026
 | Host             : Phuree running 64-bit major release  (build 9200)
 | Command          : report_power -file lab08_top_power_routed.rpt -pb lab08_top_power_summary_routed.pb -rpx lab08_top_power_routed.rpx
 | Design           : lab08_top
@@ -53,14 +53,14 @@ Table of Contents
 | On-Chip                 | Power (W) | Used     | Available | Utilization (%) |
 +-------------------------+-----------+----------+-----------+-----------------+
 | Clocks                  |     0.002 |        5 |       --- |             --- |
-| Slice Logic             |     0.013 |    13422 |       --- |             --- |
-|   LUT as Logic          |     0.012 |     7800 |     63400 |           12.30 |
-|   CARRY4                |    <0.001 |     2071 |     15850 |           13.07 |
-|   Register              |    <0.001 |      848 |    126800 |            0.67 |
-|   F7/F8 Muxes           |    <0.001 |       32 |     63400 |            0.05 |
+| Slice Logic             |     0.013 |    13385 |       --- |             --- |
+|   LUT as Logic          |     0.012 |     7889 |     63400 |           12.44 |
+|   CARRY4                |    <0.001 |     1991 |     15850 |           12.56 |
+|   Register              |    <0.001 |      852 |    126800 |            0.67 |
+|   F7/F8 Muxes           |    <0.001 |       26 |     63400 |            0.04 |
 |   LUT as Shift Register |    <0.001 |        2 |     19000 |            0.01 |
 |   Others                |     0.000 |       25 |       --- |             --- |
-| Signals                 |     0.009 |     5502 |       --- |             --- |
+| Signals                 |     0.009 |     5554 |       --- |             --- |
 | MMCM                    |     0.095 |        1 |         6 |           16.67 |
 | DSPs                    |     0.003 |       14 |       240 |            5.83 |
 | I/O                     |     0.002 |       40 |       210 |           19.05 |
@@ -143,15 +143,17 @@ Table of Contents
 3.1 By Hierarchy
 ----------------
 
-+------------+-----------+
-| Name       | Power (W) |
-+------------+-----------+
-| lab08_top  |     0.124 |
-|   u_clk    |     0.095 |
-|   u_item   |     0.002 |
-|   u_minion |     0.014 |
-|   u_player |     0.007 |
-|   u_render |     0.004 |
-+------------+-----------+
++--------------+-----------+
+| Name         | Power (W) |
++--------------+-----------+
+| lab08_top    |     0.124 |
+|   u_clk      |     0.095 |
+|   u_gfx      |     0.004 |
+|     u_render |     0.004 |
+|   u_logic    |     0.023 |
+|     u_item   |     0.002 |
+|     u_minion |     0.014 |
+|     u_player |     0.007 |
++--------------+-----------+
 
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="impl_1" LaunchPart="xc7a100tcsg324-1" LaunchTime="1795358176">
+<GenRun Id="impl_1" LaunchPart="xc7a100tcsg324-1" LaunchTime="1795358949">
   <File Type="PA-TCL" Name="lab08_top.tcl"/>
   <File Type="REPORTS-TCL" Name="lab08_top_reports.tcl"/>
   <File Type="INIT-TIMING" Name="lab08_top_timing_summary_init.rpt"/>
@@ -52,12 +52,12 @@
   <File Type="ROUTE-RQS-PB" Name="lab08_top_rqs_routed.pb"/>
   <File Type="POSTROUTE-PHYSOPT-DCP" Name="lab08_top_postroute_physopt.dcp"/>
   <File Type="POSTROUTE-PHYSOPT-BLACKBOX-DCP" Name="lab08_top_postroute_physopt_bb.dcp"/>
-  <File Type="POSTROUTE-PHYSOPT-TIMING" Name="walk_fsm_timing_summary_postroute_physopted.rpt"/>
-  <File Type="POSTROUTE-PHYSOPT-TIMING-PB" Name="walk_fsm_timing_summary_postroute_physopted.pb"/>
-  <File Type="POSTROUTE-PHYSOPT-TIMING-RPX" Name="walk_fsm_timing_summary_postroute_physopted.rpx"/>
-  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW" Name="walk_fsm_bus_skew_postroute_physopted.rpt"/>
-  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-PB" Name="walk_fsm_bus_skew_postroute_physopted.pb"/>
-  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-RPX" Name="walk_fsm_bus_skew_postroute_physopted.rpx"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING" Name="lab08_top_timing_summary_postroute_physopted.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-PB" Name="lab08_top_timing_summary_postroute_physopted.pb"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-RPX" Name="lab08_top_timing_summary_postroute_physopted.rpx"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW" Name="lab08_top_bus_skew_postroute_physopted.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-PB" Name="lab08_top_bus_skew_postroute_physopted.pb"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-RPX" Name="lab08_top_bus_skew_postroute_physopted.rpx"/>
   <File Type="BG-BIT" Name="lab08_top.bit"/>
   <File Type="BG-BIN" Name="lab08_top.bin"/>
   <File Type="BITSTR-MSK" Name="lab08_top.msk"/>
@@ -86,10 +86,10 @@
   <File Type="POSTROUTE-PHYSOPT-RQS-RPT" Name="postroute_physopt_report_qor_suggestions_0.rpt"/>
   <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
     <Filter Type="Srcs"/>
-    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular_v/boss_ctrl.v">
+    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular-v2/boss_ctrl.v">
       <FileInfo>
-        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular_v/boss_ctrl.v"/>
-        <Attr Name="ImportTime" Val="1795355868"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular-v2/boss_ctrl.v"/>
+        <Attr Name="ImportTime" Val="1795358796"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -102,28 +102,46 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular_v/font_8x8.v">
+    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular-v2/font_8x8.v">
       <FileInfo>
-        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular_v/font_8x8.v"/>
-        <Attr Name="ImportTime" Val="1795355868"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular-v2/font_8x8.v"/>
+        <Attr Name="ImportTime" Val="1795358796"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular_v/game_timer.v">
+    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular-v2/game_graphics.v">
       <FileInfo>
-        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular_v/game_timer.v"/>
-        <Attr Name="ImportTime" Val="1795355868"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular-v2/game_graphics.v"/>
+        <Attr Name="ImportTime" Val="1795358795"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular_v/item_ctrl.v">
+    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular-v2/game_logic.v">
       <FileInfo>
-        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular_v/item_ctrl.v"/>
-        <Attr Name="ImportTime" Val="1795355868"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular-v2/game_logic.v"/>
+        <Attr Name="ImportTime" Val="1795358795"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular-v2/game_timer.v">
+      <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular-v2/game_timer.v"/>
+        <Attr Name="ImportTime" Val="1795358796"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular-v2/item_ctrl.v">
+      <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular-v2/item_ctrl.v"/>
+        <Attr Name="ImportTime" Val="1795358795"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -138,10 +156,10 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular_v/minion_ctrl.v">
+    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular-v2/minion_ctrl.v">
       <FileInfo>
-        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular_v/minion_ctrl.v"/>
-        <Attr Name="ImportTime" Val="1795355868"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular-v2/minion_ctrl.v"/>
+        <Attr Name="ImportTime" Val="1795358795"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -154,37 +172,37 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular_v/player.v">
+    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular-v2/player.v">
       <FileInfo>
-        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular_v/player.v"/>
-        <Attr Name="ImportTime" Val="1795355868"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular-v2/player.v"/>
+        <Attr Name="ImportTime" Val="1795358795"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular_v/roms.v">
+    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular-v2/roms.v">
       <FileInfo>
-        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular_v/roms.v"/>
-        <Attr Name="ImportTime" Val="1795355868"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular-v2/roms.v"/>
+        <Attr Name="ImportTime" Val="1795358796"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular_v/vga_render.v">
+    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular-v2/vga_render.v">
       <FileInfo>
-        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular_v/vga_render.v"/>
-        <Attr Name="ImportTime" Val="1795355868"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular-v2/vga_render.v"/>
+        <Attr Name="ImportTime" Val="1795358795"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular_v/lab08_top.v">
+    <File Path="$PSRCDIR/sources_1/imports/fpga_rpg_modular-v2/lab08_top.v">
       <FileInfo>
-        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular_v/lab08_top.v"/>
-        <Attr Name="ImportTime" Val="1795355868"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../../Downloads/fpga_rpg_modular-v2/lab08_top.v"/>
+        <Attr Name="ImportTime" Val="1795358795"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -222,20 +240,9 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/bd/design_1/design_1.bd">
-      <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
-        <Attr Name="UsedIn" Val="synthesis"/>
-        <Attr Name="UsedIn" Val="implementation"/>
-        <Attr Name="UsedIn" Val="simulation"/>
-      </FileInfo>
-    </File>
     <Config>
       <Option Name="DesignMode" Val="RTL"/>
       <Option Name="TopModule" Val="lab08_top"/>
-      <Option Name="TopLib" Val="xil_defaultlib"/>
-      <Option Name="TopRTLFile" Val="$PSRCDIR/sources_1/imports/fpga_rpg_modular_v/lab08_top.v"/>
-      <Option Name="TopAutoSet" Val="TRUE"/>
     </Config>
   </FileSet>
   <FileSet Name="constrs_in" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1" RelGenDir="$PGENDIR/constrs_1">

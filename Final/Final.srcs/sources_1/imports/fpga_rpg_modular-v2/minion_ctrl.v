@@ -48,7 +48,7 @@ module minion_ctrl (
     integer i, dx_m, dy_m;
     reg [15:0] next_atk_mask;
 
-    // Combinational Damage Pulse to Player (exact tick when minion_state == 2 && minion_timer == 1)
+    // Combinational Damage Pulse to Player
     always @(*) begin
         minion_dmg_to_player = 1'b0;
         if (!game_won && (minion_state == 2'd2) && (minion_timer == 8'd1) && (player_hp > 0)) begin
